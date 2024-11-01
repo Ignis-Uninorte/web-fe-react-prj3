@@ -1,0 +1,48 @@
+
+.table-container {
+    color: black;
+    max-width: 100%;
+    padding: 1rem;
+    margin: auto;
+}
+
+.client-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.client-table th,
+.client-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.client-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    margin-right: 5px;
+    font-size: 0.9em;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.update-btn {
+    background-color: #007bff;
+}
+
+.toggle-btn {
+    background-color: #f0ad4e;
+}
+
+.action-btn:hover {
+    opacity: 0.8;
+}  
