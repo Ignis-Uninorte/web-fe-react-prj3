@@ -12,9 +12,8 @@ export type Client = {
     address: string;
     city: string;
     country: string;
-    corporateEmail: string;
-    active: boolean;
-    contacts: Contact[]; 
+    email: string;
+    activo: boolean;
 };
 
 export type ListClients = {

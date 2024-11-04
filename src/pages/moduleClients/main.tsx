@@ -5,23 +5,34 @@ import { useAllClients } from '../../hooks/useClients';
 import { useNavigate } from 'react-router-dom';
 
 const ModuleClient: React.FC = () => {
-    const {isLoading, isSuccess, isError, data: clients} = useAllClients();
+    const clients = [
+        //Se debe cambiar para recibir los clientes de la api (preguntar a backend)
+        { id: 1, 
+            nit: 123456789,
+            name: 'Juan Perez', 
+            direction: 'Calle 123',
+            city: 'Bogota',
+            country: 'Colombia',
+            email: 'juan@example.com', 
+            activo: true },
+        { id: 2,
+            nit: 987654321,
+            name: 'Maria Rodriguez', 
+            direction: 'Calle 456',
+            city: 'Medellin',
+            country: 'Colombia',
+            email: 'a@a.com',
+            activo: false },
+    ];
+
     const navigate = useNavigate();
     return (
         <div>
-            {isLoading && (
-                <p>Cargando...</p>
-            )}
-            {isError && (
-                <p>Hubo un error</p>
-            )}
-            {!isLoading && !isError && isSuccess && clients &&  (
-                <div>
-                    <h1>Clientes</h1>
-                    <button onClick={() => navigate('/crear-cliente')} className="btn_crearcliente">Crear Cliente</button>
-                        <div className="body_moduleClient">
-                            <ClientTable clients={clients} />
-                        </div>
+            <h1>Clientes</h1>
+            <button onClick={() => navigate('/crear-cliente')}>Crear Cliente</button>
+                <div className="body_moduleClient">
+                    <h1>Listado de Clientes</h1>
+                    <ClientTable clients={clients} />
                 </div>
             )}
         </div>

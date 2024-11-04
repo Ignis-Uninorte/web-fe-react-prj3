@@ -26,17 +26,9 @@ const ClientTable: React.FC<ListClients> = ({ clients }) => {
                 <tr key={client.nit}>
                     <td>{client.id}</td>
                     <td>{client.nit}</td>
-                    <td>
-                                {/* Make the name clickable */}
-                                <button 
-                                    onClick={() => handleNameClick(client.name)}
-                                    className="client-name-link" // Optional: you can style this as a link
-                                >
-                                    {client.name}
-                                </button>
-                            </td>
-                    <td>{client.corporateEmail}</td>
-                    <td>{client.active ? 'Si' : "No"}</td>
+                    <td>{client.name}</td>
+                    <td>{client.email}</td>
+                    <td>{client.activo ? 'Si' : "No"}</td>
                     <td>
                         <button className="action-btn update-btn">Actualizar</button>
                         <button className="action-btn toggle-btn">
