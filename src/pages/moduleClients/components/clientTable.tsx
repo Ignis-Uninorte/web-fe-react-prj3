@@ -25,14 +25,14 @@ const ClientTable: React.FC<ListClients> = ({ clients }) => {
                 </thead>
                 <tbody>
                     {clients.map((client) => (
-                        <tr key={client.nit}>
+                        <tr key={client.nit}  className={client.active ? '' : 'inactive-row'}>
                             <td>{client.id}</td>
                             <td>{client.nit}</td>
                             <td>{client.name}</td>
                             <td>{client.corporateEmail}</td>
                             <td>{client.active ? 'Si' : "No"}</td>
                             <td>
-                                <button className="action-btn update-btn">Actualizar</button>
+                                <button className="action-btn update-btn" disabled={!client.active} >Actualizar</button>
                                 <button
                                     className="action-btn toggle-btn"
                                     onClick={() => handleToggle(client.nit, client.active)}
