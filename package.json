@@ -10,10 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@tanstack/react-query": "^5.59.19",
-=======
->>>>>>> eb1c9a7 (feat(HU2001): carpet services and api call with axios made)
     "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

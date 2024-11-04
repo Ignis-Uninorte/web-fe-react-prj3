@@ -1,6 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import {ListClients} from '../../../types/clientes.type'
+import {ListClients} from '../../../types/clientes'
 import '../../../styles/clientTable.css';
 
 const ClientTable: React.FC<ListClients> = ({ clients }) => {
