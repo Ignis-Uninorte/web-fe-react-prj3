@@ -1,5 +1,5 @@
 import React from 'react';
-import {ListClients} from '../../../types/clientes'
+import {ListClients} from '../../../types/clientes.type'
 import '../../../styles/clientTable.css';
 
 const ClientTable: React.FC<ListClients> = ({ clients }) => {
