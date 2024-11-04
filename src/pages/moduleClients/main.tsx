@@ -1,7 +1,7 @@
-// src/App.tsx
 import React from 'react';
 import ClientTable from './components/clientTable';
 import '../../styles/main-moduleClients.css';
+import { useNavigate } from 'react-router-dom';
 
 const ModuleClient: React.FC = () => {
     const clients = [
@@ -24,12 +24,17 @@ const ModuleClient: React.FC = () => {
             activo: false },
     ];
 
+    const navigate = useNavigate();
     return (
-        <div className="body_moduleClient">
-            <h1>Listado de Clientes</h1>
-            <ClientTable clients={clients} />
+        <div>
+            <h1>Clientes</h1>
+            <button onClick={() => navigate('/crear-cliente')}>Crear Cliente</button>
+                <div className="body_moduleClient">
+                    <h1>Listado de Clientes</h1>
+                    <ClientTable clients={clients} />
+                </div>
         </div>
     );
-};
+}
 
 export default ModuleClient;
