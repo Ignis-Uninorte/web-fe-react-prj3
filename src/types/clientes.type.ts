@@ -5,8 +5,8 @@ export type Client = {
     direction: string;
     city: string;
     country: string;
-    email: string;
-    activo: boolean;
+    corporateEmail: string;
+    active: boolean;
 };
 
 
