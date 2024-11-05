@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ListClients, Client } from '../../../types/clientes.type';
+import { Client } from '../../../types/clientes.type';
 import '../../../styles/clientTable.css';
 import { useToggleClientStatus } from '../../../hooks/useClients';
 
