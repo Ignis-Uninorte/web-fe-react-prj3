@@ -39,6 +39,12 @@
     background-color: #007bff;
 }
 
+.action-btn.update-btn:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 .toggle-btn {
     background-color: #f0ad4e;
 }
@@ -46,3 +52,81 @@
 .action-btn:hover {
     opacity: 0.8;
 }  
+
+
+/* Estilos del formulario de edición */
+.edit-form {
+    max-width: 400px;
+    padding: 20px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f3f7f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.edit-form h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 20px;
+    text-align: center;
+}
+
+.edit-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #4CAF50; /* Verde similar al encabezado de la tabla */
+}
+
+.edit-form input[type="text"],
+.edit-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.edit-form input[type="text"]:focus,
+.edit-form input[type="email"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Botones */
+.edit-form button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.edit-form button:first-of-type {
+    background-color: #4CAF50; /* Verde para el botón de guardar cambios */
+}
+
+.edit-form button:first-of-type:hover {
+    background-color: #45a049;
+}
+
+.edit-form button:last-of-type {
+    background-color: #f44336; /* Rojo para el botón de cancelar */
+}
+
+.edit-form button:last-of-type:hover {
+    background-color: #e41f1f;
+}
+
+
+.inactive-row {
+    color: red;
+}

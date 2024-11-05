@@ -20,7 +20,7 @@ const ModuleClient: React.FC = () => {
                     <h1>Clientes</h1>
                     <button onClick={() => navigate('/crear-cliente')} className="btn_crearcliente">Crear Cliente</button>
                         <div className="body_moduleClient">
-                            <ClientTable clients={clients} />
+                            <ClientTable />
                         </div>
                 </div>
             )}
