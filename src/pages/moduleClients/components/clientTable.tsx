@@ -69,10 +69,22 @@ const ClientTable: React.FC = () => {
         }
     };
 
-    // Toggle client status (active/inactive) using custom hook
-    const handleToggle = (clientId: number, currentStatus: boolean) => {
-        toggleClientStatus.mutate({ clientId, currentStatus });
-        fetchClients(); // Refresh data after status toggle
+    // Toggle client status (active/inactive) directly in the state
+    const handleToggle = (clientNit: number, currentStatus: boolean) => {
+        toggleClientStatus.mutate(
+            { clientId: clientNit, currentStatus },
+            {
+                onSuccess: () => {
+                    setClients((prevClients) =>
+                        prevClients.map((client) =>
+                            client.nit === clientNit
+                                ? { ...client, active: !currentStatus } // Toggle the active status
+                                : client
+                        )
+                    );
+                },
+            }
+        );
     };
 
     return (
@@ -100,13 +112,13 @@ const ClientTable: React.FC = () => {
                                 <button
                                     className="action-btn update-btn"
                                     onClick={() => handleUpdateClick(client)}
-                                    disabled={!client.active} // Disable update if inactive
+                                    disabled={!client.active} 
                                 >
                                     Actualizar
                                 </button>
                                 <button
                                     className="action-btn toggle-btn"
-                                    onClick={() => handleToggle(client.nit, client.active)}
+                                    onClick={() => handleToggle(client.nit, client.active)} 
                                 >
                                     {client.active ? 'Inactivar' : 'Activar'}
                                 </button>
