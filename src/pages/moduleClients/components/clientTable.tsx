@@ -142,7 +142,6 @@ const ClientTable: React.FC = () => {
                 </tbody>
             </table>
 
-            {/* Edit client form */}
             {editingClient && (
                 <div className="edit-form">
                     <h3>Editar Cliente</h3>
