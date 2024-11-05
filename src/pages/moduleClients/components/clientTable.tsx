@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ListClients, Client } from '../../../types/clientes.type';
 import '../../../styles/clientTable.css';
+import { useToggleClientStatus } from '../../../hooks/useClients';
 
 const ClientTable: React.FC = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [editingClient, setEditingClient] = useState<Client | null>(null);
     const [updatedClient, setUpdatedClient] = useState<Client | null>(null);
+    const toggleClientStatus = useToggleClientStatus();
 
-    // Función para obtener los clientes del backend
+    // Fetch clients from the backend
     const fetchClients = async () => {
         try {
             const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
@@ -18,18 +20,18 @@ const ClientTable: React.FC = () => {
         }
     };
 
-    // Obtener los clientes cuando se monta el componente
+    // Fetch clients when the component mounts
     useEffect(() => {
         fetchClients();
     }, []);
 
-    // Manejador para abrir el formulario de edición
+    // Open the edit form with selected client data
     const handleUpdateClick = (client: Client) => {
         setEditingClient(client);
         setUpdatedClient(client);
     };
 
-    // Manejador para el cambio en los campos de entrada
+    // Handle input changes in the edit form
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (updatedClient) {
             setUpdatedClient({
@@ -39,11 +41,10 @@ const ClientTable: React.FC = () => {
         }
     };
 
-    // Manejador para enviar la actualización al backend usando el NIT
+    // Save updated client data to the backend using the NIT
     const handleSaveChanges = async () => {
         if (updatedClient) {
             try {
-                // Enviar la solicitud PUT para actualizar el cliente usando el NIT
                 const updateResponse = await fetch(
                     `https://three-web-be-json-server-api-ignis.onrender.com/clients/${updatedClient.nit}`,
                     {
@@ -57,8 +58,8 @@ const ClientTable: React.FC = () => {
 
                 if (updateResponse.ok) {
                     alert('Cliente actualizado con éxito');
-                    setEditingClient(null); // Cerrar el formulario de edición
-                    fetchClients(); // Volver a obtener los datos actualizados
+                    setEditingClient(null); // Close the edit form
+                    fetchClients(); // Refresh data
                 } else {
                     alert('Error al actualizar el cliente');
                 }
@@ -68,11 +69,18 @@ const ClientTable: React.FC = () => {
         }
     };
 
+    // Toggle client status (active/inactive) using custom hook
+    const handleToggle = (clientId: number, currentStatus: boolean) => {
+        toggleClientStatus.mutate({ clientId, currentStatus });
+        fetchClients(); // Refresh data after status toggle
+    };
+
     return (
         <div className="table-container">
             <table className="client-table">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>NIT</th>
                         <th>Nombre</th>
                         <th>Email</th>
@@ -82,7 +90,8 @@ const ClientTable: React.FC = () => {
                 </thead>
                 <tbody>
                     {clients.map((client) => (
-                        <tr key={client.nit}>
+                        <tr key={client.nit} className={client.active ? '' : 'inactive-row'}>
+                            <td>{client.id}</td>
                             <td>{client.nit}</td>
                             <td>{client.name}</td>
                             <td>{client.corporateEmail}</td>
@@ -91,10 +100,14 @@ const ClientTable: React.FC = () => {
                                 <button
                                     className="action-btn update-btn"
                                     onClick={() => handleUpdateClick(client)}
+                                    disabled={!client.active} // Disable update if inactive
                                 >
                                     Actualizar
                                 </button>
-                                <button className="action-btn toggle-btn">
+                                <button
+                                    className="action-btn toggle-btn"
+                                    onClick={() => handleToggle(client.nit, client.active)}
+                                >
                                     {client.active ? 'Inactivar' : 'Activar'}
                                 </button>
                             </td>
@@ -103,7 +116,7 @@ const ClientTable: React.FC = () => {
                 </tbody>
             </table>
 
-            {/* Formulario de edición de cliente */}
+            {/* Edit client form */}
             {editingClient && (
                 <div className="edit-form">
                     <h3>Editar Cliente</h3>
