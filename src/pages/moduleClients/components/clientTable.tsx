@@ -1,5 +1,5 @@
 import React from 'react';
-import {ListClients} from '../../../types/clientes'
+import {ListClients} from '../../../types/clientes.type'
 import '../../../styles/clientTable.css';
 
 const ClientTable: React.FC<ListClients> = ({ clients }) => {
@@ -27,8 +27,8 @@ const ClientTable: React.FC<ListClients> = ({ clients }) => {
                     <td>{client.id}</td>
                     <td>{client.nit}</td>
                     <td>{client.name}</td>
-                    <td>{client.email}</td>
-                    <td>{client.activo ? 'Si' : "No"}</td>
+                    <td>{client.corporateEmail}</td>
+                    <td>{client.active ? 'Si' : "No"}</td>
                     <td>
                         <button className="action-btn update-btn">Actualizar</button>
                         <button className="action-btn toggle-btn">

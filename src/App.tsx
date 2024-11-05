@@ -4,14 +4,19 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CreateClient from './pages/moduleClients/components/CreateClient';
 import ModuleClient from './pages/moduleClients/main';
 
+const queryClient = new QueryClient();
+
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<ModuleClient />} />
-        <Route path="/crear-cliente" element={<CreateClient />} />
-      </Routes>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<ModuleClient />} />
+          <Route path="/crear-cliente" element={<CreateClient />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
