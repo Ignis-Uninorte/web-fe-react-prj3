@@ -1,0 +1,55 @@
+.client-detail-container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+.client-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.info-item {
+    flex: 1;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.client-contacts {
+    margin-top: 20px;
+}
+
+.contacts-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.contact-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: calc(33.33% - 10px); /* Three columns with some margin */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+}
+
+.contact-card-item {
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+.contact-card-item strong {
+    display: inline-block;
+    width: 80px;
+}
