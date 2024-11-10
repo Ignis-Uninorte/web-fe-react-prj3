@@ -63,6 +63,13 @@ h2 {
   flex: 1;
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
 .add-contact-btn,
 button[type="submit"] {
   margin: 1.5rem;
@@ -121,4 +128,19 @@ button[type="submit"]:hover {
 
 .delete-contact-btn:hover {
   color: #c9302c;
+}
+
+.form-group.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea los elementos al inicio del contenedor */
+}
+
+.form-group.checkbox-group label {
+  margin-bottom: 0.5rem;
+}
+
+.form-group.checkbox-group input[type="checkbox"] {
+  margin-top: 0.25rem;
+  transform: scale(1.2); /* Opcional: para agrandar un poco el checkbox */
 }

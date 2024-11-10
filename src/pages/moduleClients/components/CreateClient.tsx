@@ -80,7 +80,7 @@ const CreateClient: React.FC = () => {
           {errors.phone && <span className="error">{errors.phone.message}</span>}
         </div>
 
-        <div className="form-group">
+        <div className="form-group checkbox-group">
           <label>Activo:</label>
           <input type="checkbox" {...register('active')} />
         </div>
@@ -92,7 +92,7 @@ const CreateClient: React.FC = () => {
             <input placeholder="Apellido" {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })} />
             <input placeholder="Correo" {...register(`contacts.${index}.email`, { required: 'Correo obligatorio', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } })} />
             <input placeholder="Teléfono" {...register(`contacts.${index}.phone`, { required: 'Teléfono obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })} />
-            
+
             <button type="button" onClick={() => remove(index)} className="delete-contact-btn">
               🗑️ {/* Icono de basura */}
             </button>
@@ -101,12 +101,13 @@ const CreateClient: React.FC = () => {
             {/* Similar error messages for other contact fields */}
           </div>
         ))}
+        <div className="button-container">
+          <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
+            Agregar Contacto
+          </button>
 
-        <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
-          Agregar Contacto
-        </button>
-
-        <button type="submit">Guardar Cliente</button>
+          <button type="submit">Guardar Cliente</button>
+        </div>
       </form>
     </div>
   );
