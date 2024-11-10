@@ -25,6 +25,7 @@ const ModuleClient: React.FC = () => {
                 </div>
             )}
         </div>
+        
 );
 }
 
