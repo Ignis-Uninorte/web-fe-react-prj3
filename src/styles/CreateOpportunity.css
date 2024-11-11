@@ -20,6 +20,25 @@ body {
   box-sizing: border-box; /* Asegura que el padding no sume al ancho total */
 }
 
+
+.back{
+  margin-right: auto;
+  height: 0px;
+}
+
+button.back-btn {
+  background-color: #ffffff;
+  border: #ffffff;
+  cursor:pointer;
+}
+
+.back-arrow img {
+  width: 32px;
+  height: 57px;
+  padding-top: 20px;
+}
+
+
 /* Estilo para el título */
 h2 {
   color: #333;

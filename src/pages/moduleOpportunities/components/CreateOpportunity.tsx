@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import MainLayout from '../../../layouts/MainLayout';
+import back from '../../../assets/back-arrow.svg';
 import '../../../styles/CreateOpportunity.css';
 
 interface OpportunityFormInputs {
@@ -63,7 +65,15 @@ const CreateOpportunity: React.FC = () => {
   };
 
   return (
+    <MainLayout>
     <div className="create-opportunity-form container">
+      <div className='back'>
+        <div className='back-arrow'>
+          <button onClick={() => window.history.back()} className="back-btn">
+            <img src={back} alt="Back" />
+          </button>
+        </div>
+      </div>
       <h2>Crear Nueva Oportunidad</h2>
       {message && <div className="notification">{message}</div>}
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -119,6 +129,7 @@ const CreateOpportunity: React.FC = () => {
         <button type="submit" className="submit-btn">Guardar Oportunidad</button>
       </form>
     </div>
+    </MainLayout>
   );
 };
 
