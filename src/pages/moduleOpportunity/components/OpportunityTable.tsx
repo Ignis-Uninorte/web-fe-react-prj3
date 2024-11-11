@@ -1,17 +1,22 @@
+// OpportunityTable.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Opportunity } from '../../../types/opportunities.type';
 import '../../../styles/opportunityTable.css';
-import { useAllOpportunities } from '../../../hooks/useOpportunities';
+import { useAllOpportunities, useDeleteOpportunity } from '../../../hooks/useOpportunities';
 import DataTable from 'react-data-table-component';
 import columnsConfig from '../../components/columnConfig';
 import ActionButtons from '../../components/actionButtons';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 
 const OpportunityTable: React.FC = () => {
     const { isLoading, isSuccess, isError, data: opportunitiesData } = useAllOpportunities();
+    const deleteOpportunity = useDeleteOpportunity();
     const navigate = useNavigate();
 
     const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+    const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (isSuccess && opportunitiesData) {
@@ -22,6 +27,44 @@ const OpportunityTable: React.FC = () => {
     const handleRowClick = (opportunityId: number) => {
         navigate(`/opportunity/${opportunityId}`);
     };
+
+    const handleDeleteClick = (opportunityId: string) => {
+        setSelectedOpportunityId(opportunityId);
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (selectedOpportunityId) {
+            deleteOpportunity.mutate(selectedOpportunityId, {
+                onSuccess: () => {
+                    // Update local state immediately by filtering out the deleted item
+                    setOpportunities(prevOpportunities =>
+                        prevOpportunities.filter(opportunity => opportunity.Id !== selectedOpportunityId)
+                    );
+                    setIsModalOpen(false);
+                    setSelectedOpportunityId(null);
+                },
+            });
+        }
+    };
+
+    const cancelDelete = () => {
+        setIsModalOpen(false);
+        setSelectedOpportunityId(null);
+    };
+
+    const actionButtons = [
+        {
+            label: 'Actualizar',
+            onClick: (opportunity: Opportunity) => navigate(`/opportunity/update/${opportunity.Id}`),
+            className: 'action-btn update-btn',
+        },
+        {
+            label: 'Eliminar',
+            onClick: (opportunity: Opportunity) => handleDeleteClick(opportunity.Id),
+            className: 'action-btn delete-btn',
+        },
+    ];
 
     const baseColumns = [
         {
@@ -50,19 +93,6 @@ const OpportunityTable: React.FC = () => {
             selector: (row: Opportunity) => row.estimatedDate,
             sortable: true,
             cell: (row: Opportunity) => new Date(row.estimatedDate).toLocaleDateString(),
-        },
-    ];
-
-    const actionButtons = [
-        {
-            label: 'Actualizar',
-            onClick: (opportunity: Opportunity) => navigate(`/opportunity/update/${opportunity.Id}`),
-            className: 'action-btn update-btn',
-        },
-        {
-            label: 'Eliminar',
-            onClick: () => alert('Oportunidad eliminada (sin funcionalidad en esta historia)'),
-            className: 'action-btn delete-btn',
         },
     ];
 
@@ -107,6 +137,12 @@ const OpportunityTable: React.FC = () => {
                     }}
                 />
             )}
+
+            <DeleteConfirmationModal
+                isOpen={isModalOpen}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 };
