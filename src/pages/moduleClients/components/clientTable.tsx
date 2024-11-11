@@ -2,86 +2,130 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Client } from '../../../types/clientes.type';
 import '../../../styles/clientTable.css';
-import { getAllClients, toggleClientStatus } from '../../../services/clients.services'; // Cambia la ruta aquí
+import { useToggleClientStatus, useAllClients } from '../../../hooks/useClients';
+import DataTable from 'react-data-table-component';
+import columnsConfig from '../../components/columnConfig';
+import ActionButtons from '../../components/actionButtons';
 
 const ClientTable: React.FC = () => {
-    const [clients, setClients] = useState<Client[]>([]);
+    const { isLoading, isSuccess, isError, data: clientsData } = useAllClients();
+    const toggleClientStatus = useToggleClientStatus();
     const navigate = useNavigate();
-
-    // Fetch clients from the backend
-    const fetchClients = async () => {
-        try {
-            const data = await getAllClients(); // Usa el servicio
-            setClients(data);
-        } catch (error) {
-            console.error('Error al obtener los clientes:', error);
-        }
-    };
+    const [clients, setClients] = useState<Client[]>([]);
 
     useEffect(() => {
-        fetchClients();
-    }, []);
+        if (isSuccess && clientsData) {
+            setClients(clientsData);
+        }
+    }, [isSuccess, clientsData]);
 
+    // Toggle client status
+    const handleToggle = (clientNit: number, currentStatus: boolean) => {
+        toggleClientStatus.mutate(
+            { clientId: clientNit, currentStatus },
+            {
+                onSuccess: () => {
+                    setClients((prevClients) =>
+                        prevClients.map((client) =>
+                            client.nit === clientNit
+                                ? { ...client, active: !currentStatus }
+                                : client
+                        )
+                    );
+                },
+            }
+        );
+    };
+
+    // Handle update click to navigate to the edit page with client NIT
     const handleUpdateClick = (client: Client) => {
         navigate(`/crear-cliente/${client.nit}`);
     };
 
-    // Toggle client status (active/inactive) directly in the state
-    const handleToggle = async (clientNit: number, currentStatus: boolean) => {
-        try {
-            const updatedClient = await toggleClientStatus(clientNit, currentStatus); // Usa el servicio
-            setClients((prevClients) =>
-                prevClients.map((client) =>
-                    client.nit === clientNit
-                        ? { ...client, active: !currentStatus } // Toggle the active status
-                        : client
-                )
-            );
-        } catch (error) {
-            console.error('Error al actualizar el estado del cliente:', error);
-        }
-    };
+    const baseColumns = [
+        {
+            name: 'ID',
+            selector: (row: Client) => row.id,
+            sortable: true,
+        },
+        {
+            name: 'NIT',
+            selector: (row: Client) => row.nit,
+            sortable: true,
+        },
+        {
+            name: 'Nombre',
+            selector: (row: Client) => row.name,
+            sortable: true,
+        },
+        {
+            name: 'Email',
+            selector: (row: Client) => row.corporateEmail,
+            sortable: true,
+        },
+        {
+            name: 'Activo',
+            selector: (row: Client) => row.active,
+            sortable: true,
+            cell: (row: Client) => <div>{row.active ? 'Sí' : 'No'}</div>,
+        },
+    ];
+
+    const actionButtons = [
+        {
+            label: (client: Client) => (client.active ? 'Inactivar' : 'Activar'),
+            onClick: (client: Client) => handleToggle(client.nit, client.active),
+            className: 'action-btn toggle-btn',
+        },
+        {
+            label: 'Actualizar',
+            onClick: (client: Client) => handleUpdateClick(client),
+            className: 'action-btn update-btn',
+            disabled: (client: Client) => !client.active,
+        },
+    ];
+
+    const customColumns = [
+        {
+            name: 'Acciones',
+            selector: undefined,
+            sortable: false,
+            cell: (row: Client) => (
+                <ActionButtons item={row} navigate={navigate} actions={actionButtons} />
+            ),
+        },
+    ];
 
     return (
         <div className="table-container">
-            <table className="client-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>NIT</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {clients.map((client) => (
-                        <tr key={client.nit} className={client.active ? '' : 'inactive-row'}>
-                            <td>{client.id}</td>
-                            <td>{client.nit}</td>
-                            <td>{client.name}</td>
-                            <td>{client.corporateEmail}</td>
-                            <td>{client.active ? 'Sí' : 'No'}</td>
-                            <td>
-                                <button
-                                    className="action-btn update-btn"
-                                    onClick={() => handleUpdateClick(client)}
-                                    disabled={!client.active}
-                                >
-                                    Actualizar
-                                </button>
-                                <button
-                                    className="action-btn toggle-btn"
-                                    onClick={() => handleToggle(client.nit, client.active)}
-                                >
-                                    {client.active ? 'Inactivar' : 'Activar'}
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {isLoading && <p>Cargando...</p>}
+            {isError && <p>Hubo un error</p>}
+            {!isLoading && !isError && isSuccess && (
+                <DataTable
+                    columns={columnsConfig({ baseColumns, customColumns })}
+                    data={clients}
+                    pagination
+                    onRowClicked={(row) => handleUpdateClick(row)} // Redirige al hacer clic en la fila
+                    className="client-table"
+                    customStyles={{
+                        headCells: {
+                            style: {
+                                textAlign: 'center',
+                                backgroundColor: '#4CAF50',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            },
+                        },
+                        cells: {
+                            style: {
+                                padding: '12px 15px',
+                                textAlign: 'center',
+                                borderBottom: '1px solid #ddd',
+                            },
+                        },
+                    }}
+                />
+            )}
         </div>
     );
 };

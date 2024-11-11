@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CreateClient from './pages/moduleClients/components/CreateClient';
 import ModuleClient from './pages/moduleClients/main';
 import ClientDetail from './pages/moduleClients/components/ClientDetail';
-import ModuleOpportunity from './pages/moduleOpportunities/main'; 
-import CreateOpportunity from './pages/moduleOpportunities/components/CreateOpportunity'; 
+import ModuleOpportunity from './pages/moduleOpportunity/main';
+import CreateOpportunity from './pages/moduleOpportunity/components/CreateOpportunity';
 
 const queryClient = new QueryClient();
 

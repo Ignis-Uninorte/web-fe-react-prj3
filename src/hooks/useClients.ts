@@ -13,7 +13,7 @@ export function useToggleClientStatus() {
   return useMutation({
       mutationFn: ({ clientId, currentStatus }: { clientId: number; currentStatus: boolean }) => toggleClientStatus(clientId, currentStatus),
       onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['clients'] });
+          queryClient.invalidateQueries({ queryKey: ['clientsStatus'] });
       }
   });
 }
