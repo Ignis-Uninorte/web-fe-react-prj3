@@ -6,9 +6,8 @@ import { useToggleClientStatus } from '../../../hooks/useClients';
 
 const ClientTable: React.FC = () => {
     const [clients, setClients] = useState<Client[]>([]);
-    const [editingClient, setEditingClient] = useState<Client | null>(null);
-    const [updatedClient, setUpdatedClient] = useState<Client | null>(null);
     const toggleClientStatus = useToggleClientStatus();
+    const navigate = useNavigate();
 
     // Fetch clients from the backend
     const fetchClients = async () => {
@@ -21,56 +20,15 @@ const ClientTable: React.FC = () => {
         }
     };
 
-    // Fetch clients when the component mounts
     useEffect(() => {
         fetchClients();
     }, []);
 
-    // Open the edit form with selected client data
     const handleUpdateClick = (client: Client) => {
-        setEditingClient(client);
-        setUpdatedClient(client);
+        // Redirige a la página de edición con el NIT del cliente
+        navigate(`/crear-cliente/${client.nit}`);
     };
 
-    // Handle input changes in the edit form
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (updatedClient) {
-            setUpdatedClient({
-                ...updatedClient,
-                [e.target.name]: e.target.value,
-            });
-        }
-    };
-
-    // Save updated client data to the backend using the NIT
-    const handleSaveChanges = async () => {
-        if (updatedClient) {
-            try {
-                const updateResponse = await fetch(
-                    `https://three-web-be-json-server-api-ignis.onrender.com/clients/${updatedClient.nit}`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(updatedClient),
-                    }
-                );
-
-                if (updateResponse.ok) {
-                    alert('Cliente actualizado con éxito');
-                    setEditingClient(null); // Close the edit form
-                    fetchClients(); // Refresh data
-                } else {
-                    alert('Error al actualizar el cliente');
-                }
-            } catch (error) {
-                console.error('Error al actualizar el cliente:', error);
-            }
-        }
-    };
-
-    // Toggle client status (active/inactive) directly in the state
     const handleToggle = (clientNit: number, currentStatus: boolean) => {
         toggleClientStatus.mutate(
             { clientId: clientNit, currentStatus },
@@ -88,11 +46,6 @@ const ClientTable: React.FC = () => {
         );
     };
 
-    const navigate = useNavigate();
-    // Handler function to navigate to the client detail page
-    const handleNameClick = (clientName: string) => {
-        navigate(`/client/${encodeURIComponent(clientName)}`); // Encodes the name for the URL
-    };
     return (
         <div className="table-container">
             <table className="client-table">
@@ -111,28 +64,20 @@ const ClientTable: React.FC = () => {
                         <tr key={client.nit} className={client.active ? '' : 'inactive-row'}>
                             <td>{client.id}</td>
                             <td>{client.nit}</td>
-                            <td>
-                                {/* Make the name clickable */}
-                                <button 
-                                    onClick={() => handleNameClick(client.name)}
-                                    className="client-name-link" // Optional: you can style this as a link
-                                >
-                                    {client.name}
-                                </button>
-                            </td>
+                            <td>{client.name}</td>
                             <td>{client.corporateEmail}</td>
-                            <td>{client.active ? 'Si' : 'No'}</td>
+                            <td>{client.active ? 'Sí' : 'No'}</td>
                             <td>
                                 <button
                                     className="action-btn update-btn"
                                     onClick={() => handleUpdateClick(client)}
-                                    disabled={!client.active} 
+                                    disabled={!client.active}
                                 >
                                     Actualizar
                                 </button>
                                 <button
                                     className="action-btn toggle-btn"
-                                    onClick={() => handleToggle(client.nit, client.active)} 
+                                    onClick={() => handleToggle(client.nit, client.active)}
                                 >
                                     {client.active ? 'Inactivar' : 'Activar'}
                                 </button>
@@ -141,33 +86,6 @@ const ClientTable: React.FC = () => {
                     ))}
                 </tbody>
             </table>
-
-            {editingClient && (
-                <div className="edit-form">
-                    <h3>Editar Cliente</h3>
-                    <label>
-                        Nombre:
-                        <input
-                            type="text"
-                            name="name"
-                            value={updatedClient?.name || ''}
-                            onChange={handleInputChange}
-                        />
-                    </label>
-                    <label>
-                        Email:
-                        <input
-                            type="email"
-                            name="corporateEmail"
-                            value={updatedClient?.corporateEmail || ''}
-                            onChange={handleInputChange}
-                        />
-                    </label>
-                    
-                    <button onClick={handleSaveChanges}>Guardar Cambios</button>
-                    <button onClick={() => setEditingClient(null)}>Cancelar</button>
-                </div>
-            )}
         </div>
     );
 };

@@ -17,6 +17,7 @@ function App() {
           {/* Existing routes */}
           <Route path="/" element={<ModuleClient />} />
           <Route path="/crear-cliente" element={<CreateClient />} />
+          <Route path="/crear-cliente/:nit" element={<CreateClient />} /> {/* Ruta para edición */}
           <Route path="/client/:clientId" element={<ClientDetail />} />
 
           {/* New routes for opportunities module */}

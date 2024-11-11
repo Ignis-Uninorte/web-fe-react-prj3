@@ -1,5 +1,5 @@
 import React from 'react';
-import ClientTable from './components/clientTable';
+import ClientTable from './components/ClientTable';
 import MainLayout from '../../layouts/MainLayout';
 import '../../styles/main-moduleClients.css';
 import { useAllClients } from '../../hooks/useClients';
