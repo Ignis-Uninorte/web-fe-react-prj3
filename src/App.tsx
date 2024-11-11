@@ -16,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ModuleClient />} />
           <Route path="/crear-cliente" element={<CreateClient />} />
+          <Route path="/crear-cliente/:nit" element={<CreateClient />} /> {/* Ruta para editar cliente */}
           <Route path="/client/:clientId" element={<ClientDetail />} />
           <Route path="/oportunidades" element={<ModuleOpportunity />} />
           <Route path="/crear-oportunidad" element={<CreateOpportunity />} />

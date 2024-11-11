@@ -11,7 +11,6 @@ const ClientTable: React.FC = () => {
     const { isLoading, isSuccess, isError, data: clientsData } = useAllClients();
     const toggleClientStatus = useToggleClientStatus();
     const navigate = useNavigate();
-
     const [clients, setClients] = useState<Client[]>([]);
 
     useEffect(() => {
@@ -20,6 +19,7 @@ const ClientTable: React.FC = () => {
         }
     }, [isSuccess, clientsData]);
 
+    // Toggle client status
     const handleToggle = (clientNit: number, currentStatus: boolean) => {
         toggleClientStatus.mutate(
             { clientId: clientNit, currentStatus },
@@ -37,8 +37,9 @@ const ClientTable: React.FC = () => {
         );
     };
 
-    const handleRowClick = (clientName: string) => {
-        navigate(`/client/${encodeURIComponent(clientName)}`);
+    // Handle update click to navigate to the edit page with client NIT
+    const handleUpdateClick = (client: Client) => {
+        navigate(`/crear-cliente/${client.nit}`);
     };
 
     const baseColumns = [
@@ -66,7 +67,7 @@ const ClientTable: React.FC = () => {
             name: 'Activo',
             selector: (row: Client) => row.active,
             sortable: true,
-            cell: (row: Client) => <div>{(row.active ? 'Sí' : 'No')}</div>,
+            cell: (row: Client) => <div>{row.active ? 'Sí' : 'No'}</div>,
         },
     ];
 
@@ -78,7 +79,7 @@ const ClientTable: React.FC = () => {
         },
         {
             label: 'Actualizar',
-            onClick: (client: Client) => navigate(`/client/update/${client.nit}`),
+            onClick: (client: Client) => handleUpdateClick(client),
             className: 'action-btn update-btn',
             disabled: (client: Client) => !client.active,
         },
@@ -104,7 +105,7 @@ const ClientTable: React.FC = () => {
                     columns={columnsConfig({ baseColumns, customColumns })}
                     data={clients}
                     pagination
-                    onRowClicked={(row) => handleRowClick(row.name)}
+                    onRowClicked={(row) => handleUpdateClick(row)} // Redirige al hacer clic en la fila
                     className="client-table"
                     customStyles={{
                         headCells: {
