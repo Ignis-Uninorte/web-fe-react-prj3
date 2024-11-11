@@ -31,9 +31,10 @@ const CreateClient: React.FC = () => {
     name: 'contacts',
   });
   const [message, setMessage] = useState<string | null>(null);
-  const { nit } = useParams<{ nit: string }>(); // Obtiene `nit` de los parámetros de la URL
+  const { nit } = useParams<{ nit: string }>(); 
+  console.log(nit)
   const navigate = useNavigate();
-  const isEditing = !!nit; // `true` si estamos en modo de edición (hay un `nit`)
+  const isEditing = !!nit; 
 
   useEffect(() => {
     if (isEditing) {
@@ -41,6 +42,7 @@ const CreateClient: React.FC = () => {
       const fetchClientData = async () => {
         try {
           const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/clients/${nit}`);
+          console.log(response)
           if (response.ok) {
             const clientData = await response.json();
             reset(clientData); // Rellena el formulario con los datos del cliente
@@ -68,9 +70,9 @@ const CreateClient: React.FC = () => {
       );
 
       if (response.ok) {
-        setMessage(isEditing ? '¡Cliente actualizado con éxito!' : '¡Cliente creado con éxito!');
+        setMessage(isEditing ? '¡Cliente actualizado con éxito!, Redirigiendo en 2seg' : '¡Cliente creado con éxito!');
         if (!isEditing) reset(); // Resetea el formulario después de crear un cliente
-        setTimeout(() => navigate('/clients'), 2000); // Navega de regreso a la lista de clientes después de 2 segundos
+        setTimeout(() => navigate('/'), 2000); // Navega de regreso a la lista de clientes después de 2 segundos
       } else {
         setMessage('Error al guardar el cliente.');
       }
@@ -109,7 +111,7 @@ const CreateClient: React.FC = () => {
             {errors.name && <span className="error">{errors.name.message}</span>}
           </div>
 
-          {/* Campos adicionales para dirección, ciudad, país, etc. */}
+          
 
           <div className="form-group">
             <label>Correo Corporativo:</label>
@@ -137,28 +139,50 @@ const CreateClient: React.FC = () => {
             <input type="checkbox" {...register('active')} />
           </div>
 
-          <h3>Contactos Asociados</h3>
-          {fields.map((field, index) => (
-            <div key={field.id} className="contact-group">
-              <input placeholder="Nombre" {...register(`contacts.${index}.name`, { required: 'Nombre obligatorio' })} />
-              <input placeholder="Apellido" {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })} />
-              <input
-                placeholder="Correo"
-                {...register(`contacts.${index}.email`, {
-                  required: 'Correo obligatorio',
-                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' },
-                })}
-              />
-              <input
-                placeholder="Teléfono"
-                {...register(`contacts.${index}.phone`, { required: 'Teléfono obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })}
-              />
-              <button type="button" onClick={() => remove(index)} className="delete-contact-btn">
-                🗑️ {/* Icono de basura */}
-              </button>
-              {errors.contacts?.[index]?.name && <span className="error">{errors.contacts[index].name?.message}</span>}
-            </div>
-          ))}
+          <h3 className="associated-contacts-title">Contactos Asociados</h3>
+<div className="contacts-section">
+  {fields.map((field, index) => (
+    <div key={field.id} className="contact-group">
+      <input
+        placeholder="Nombre"
+        className="contact-input contact-name"
+        {...register(`contacts.${index}.name`, { required: 'Nombre obligatorio' })}
+      />
+      <input
+        placeholder="Apellido"
+        className="contact-input contact-lastname"
+        {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })}
+      />
+      <input
+        placeholder="Correo"
+        type="email"
+        className="contact-input contact-email"
+        {...register(`contacts.${index}.email`, {
+          required: 'Correo obligatorio',
+          pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Correo inválido' },
+        })}
+      />
+      <input
+        placeholder="Teléfono"
+        className="contact-input contact-phone"
+        {...register(`contacts.${index}.phone`, {
+          required: 'Teléfono obligatorio',
+          pattern: { value: /^\d+$/, message: 'Solo números' },
+        })}
+      />
+
+      <button type="button" onClick={() => remove(index)} className="delete-contact-btn">
+        🗑️
+      </button>
+
+      {errors.contacts?.[index]?.name && <span className="error">{errors.contacts[index].name?.message}</span>}
+    </div>
+  ))}
+</div>
+
+
+
+
           <div className="button-container">
             <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
               Agregar Contacto
@@ -172,3 +196,6 @@ const CreateClient: React.FC = () => {
 };
 
 export default CreateClient;
+
+
+

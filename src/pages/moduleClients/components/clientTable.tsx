@@ -25,9 +25,9 @@ const ClientTable: React.FC = () => {
     }, []);
 
     const handleUpdateClick = (client: Client) => {
-        // Redirige a la página de edición con el NIT del cliente
         navigate(`/crear-cliente/${client.nit}`);
     };
+    
 
     const handleToggle = (clientNit: number, currentStatus: boolean) => {
         toggleClientStatus.mutate(

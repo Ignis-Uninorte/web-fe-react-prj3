@@ -162,3 +162,40 @@ button[type="submit"]:hover {
   margin-top: 0.25rem;
   transform: scale(1.2); /* Opcional: para agrandar un poco el checkbox */
 }
+
+
+.contacts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre los contactos */
+  margin-top: 10px;
+}
+
+.contact-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacio entre los campos de cada contacto */
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.contact-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1; /* Para que los campos ocupen el mismo espacio */
+  font-size: 14px;
+}
+
+.contact-name, .contact-lastname {
+  flex: 1; /* Espacio igual para nombre y apellido */
+}
+
+.contact-email, .contact-phone {
+  flex: 1; /* Espacio igual para email y teléfono */
+}
+
+
+
