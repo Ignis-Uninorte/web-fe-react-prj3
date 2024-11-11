@@ -37,7 +37,7 @@ const OpportunityTable: React.FC = () => {
         if (selectedOpportunityId) {
             deleteOpportunity.mutate(selectedOpportunityId, {
                 onSuccess: () => {
-                    // Update local state immediately by filtering out the deleted item
+                    
                     setOpportunities(prevOpportunities =>
                         prevOpportunities.filter(opportunity => opportunity.Id !== selectedOpportunityId)
                     );
