@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import MainLayout from '../../../layouts/MainLayout';
 import '../../../styles/CreateClient.css';
+import back from '../../../assets/back-arrow.svg';
 
 interface Contact {
   name: string;
@@ -53,6 +54,13 @@ const CreateClient: React.FC = () => {
   return (
     <MainLayout>
     <div className="create-client-form container">
+      <div className='back'>
+      <div className='back-arrow'>
+        <button onClick={() => window.history.back()} className="back-btn">
+          <img src={back} alt="Back" />
+        </button>
+      </div>
+      </div>
       <h2>Crear Nuevo Cliente</h2>
       {message && <div className="notification">{message}</div>}
       <form onSubmit={handleSubmit(onSubmit)}>

@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import { useAllClients } from '../../../hooks/useClients';
 import { Client, Contact } from '../../../types/clientes.type';
+import back from '../../../assets/back-arrow.svg';
 import '../../../styles/ClientDetail.css';
 
 const ClientDetail: React.FC = () => {
@@ -25,35 +26,54 @@ const ClientDetail: React.FC = () => {
 
     return (
         <MainLayout>
-        <div className="client-detail-container">
-            {/* Client Info Row */}
-            <div className="client-info-row">
-                <div className="info-item"><strong>Name:</strong> {clientData.name}</div>
-                <div className="info-item"><strong>NIT:</strong> {clientData.nit}</div>
-                <div className="info-item"><strong>Address:</strong> {clientData.address}</div>
-                <div className="info-item"><strong>City:</strong> {clientData.city}</div>
-                <div className="info-item"><strong>Country:</strong> {clientData.country}</div>
-                <div className="info-item"><strong>Corporate Email:</strong> {clientData.corporateEmail}</div>
-                <div className="info-item"><strong>Active:</strong> {clientData.active ? 'Yes' : 'No'}</div>
-            </div>
-
-            {/* Associated Contacts */}
-            {clientData.contacts && clientData.contacts.length > 0 && (
-                <div className="client-contacts">
-                    <h2>Associated Contacts</h2>
-                    <div className="contacts-grid">
-                        {clientData.contacts.map((contact: Contact, index: number) => (
-                            <div className="contact-card" key={index}>
-                                <div className="contact-card-item"><strong>Name:</strong> {contact.name}</div>
-                                <div className="contact-card-item"><strong>Last Name:</strong> {contact.lastName}</div>
-                                <div className="contact-card-item"><strong>Email:</strong> {contact.email}</div>
-                                <div className="contact-card-item"><strong>Phone:</strong> {contact.phone}</div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="client-detail-container">
+                <div className="back-arrow">
+                    <button onClick={() => window.history.back()} className="back-btn">
+                        <img src={back} alt="Back" />
+                    </button>
                 </div>
-            )}
-        </div>
+                <h2 className="client-detail-title">Detalles del cliente</h2>
+                <div className="client-info-grid">
+                    <div><strong>Nombre</strong><p>{clientData.name}</p></div>
+                    <div><strong>NIT</strong><p>{clientData.nit}</p></div>
+                    <div><strong>Email corporativo</strong><p>{clientData.corporateEmail}</p></div>
+                    <div className="client-status">
+                        <strong>Activo</strong>
+                        <p className={clientData.active ? 'status-active' : 'status-inactive'}>
+                            {clientData.active ? 'Activo' : 'Inactivo'}
+                        </p>
+                    </div>
+                    <div><strong>Dirección</strong><p>{clientData.address}</p></div>
+                    <div><strong>Ciudad</strong><p>{clientData.city}</p></div>
+                    <div><strong>País</strong><p>{clientData.country}</p></div>
+                    
+                </div>
+                <h3 className="associated-contacts-title">Contactos asociados</h3>
+                {clientData.contacts && clientData.contacts.length > 0 ? (
+                    <table className="contacts-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {clientData.contacts.map((contact: Contact, index: number) => (
+                                <tr key={index}>
+                                    <td>{contact.name}</td>
+                                    <td>{contact.lastName}</td>
+                                    <td>{contact.email}</td>
+                                    <td>{contact.phone}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p>No hay contactos asociados.</p>
+                )}
+            </div>
         </MainLayout>
     );
 };
