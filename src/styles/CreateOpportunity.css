@@ -20,6 +20,41 @@ body {
 }
 
 
+.back{
+  margin-right: auto;
+  height: 0px;
+}
+
+button.back-btn {
+  background-color: #ffffff;
+  border: #ffffff;
+  cursor:pointer;
+}
+
+.back-arrow img {
+  width: 32px;
+  height: 57px;
+  padding-top: 20px;
+}
+
+
+.back{
+  margin-right: auto;
+  height: 0px;
+}
+
+button.back-btn {
+  background-color: #ffffff;
+  border: #ffffff;
+  cursor:pointer;
+}
+
+.back-arrow img {
+  width: 32px;
+  height: 57px;
+  padding-top: 20px;
+}
+
 h2 {
   color: #333;
   font-size: 1.8rem;
