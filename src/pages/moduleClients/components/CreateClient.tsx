@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
+import MainLayout from '../../../layouts/MainLayout';
 import '../../../styles/CreateClient.css';
 
 interface Contact {
@@ -50,6 +51,7 @@ const CreateClient: React.FC = () => {
   };
 
   return (
+    <MainLayout>
     <div className="create-client-form container">
       <h2>Crear Nuevo Cliente</h2>
       {message && <div className="notification">{message}</div>}
@@ -110,6 +112,7 @@ const CreateClient: React.FC = () => {
         </div>
       </form>
     </div>
+    </MainLayout>
   );
 };
 

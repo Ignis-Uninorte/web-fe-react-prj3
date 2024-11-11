@@ -1,0 +1,63 @@
+/* Header styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #0c1e2c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 100px;
+    
+  }
+  
+  .logo {
+    margin-left: 100px;
+  }
+  
+  .logo img {
+    height: 110px;
+  }
+
+  .side-menu {
+    margin-left: 38px;
+  } 
+
+  .menu-icon img {
+    height: 50px;
+    width: 50px;
+  }
+  .account-cart {
+    display: flex;
+    align-items: center;
+  }
+  
+  .account-cart a {
+    text-decoration: none;
+    color: #fcfbfc;
+    text-align: center;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    margin: 0 15px;
+    font-family: 'SUSE', sans-serif;
+  }
+  
+  .account-cart{
+    margin-right: 38px;
+  }
+  
+  .account-cart img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+  }
+  
+  .account-cart span {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .cart-link span {
+    color: #fd8916;
+  }
+  

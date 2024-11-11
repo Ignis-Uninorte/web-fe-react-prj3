@@ -20,7 +20,7 @@
 }
 
 .client-table th {
-    background-color: #4CAF50;
+    background-color: #0c1e2c;
     color: white;
     font-weight: bold;
 }
@@ -36,7 +36,7 @@
 }
 
 .update-btn {
-    background-color: #007bff;
+    background-color: #ff8d08;
 }
 
 .action-btn.update-btn:disabled {
@@ -46,12 +46,21 @@
     opacity: 0.6;
 }
 .toggle-btn {
-    background-color: #f0ad4e;
+    background-color: #004aad;
 }
+
 
 .action-btn:hover {
     opacity: 0.8;
 }  
+
+.client-name-link {
+    color: #004aad;
+    text-decoration:underline;
+    border: #f8f9fa;
+    background-color: #f8f9fa;
+}
+
 
 
 /* Estilos del formulario de edición */

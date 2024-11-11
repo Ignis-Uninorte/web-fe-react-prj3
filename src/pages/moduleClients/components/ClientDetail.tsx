@@ -1,6 +1,7 @@
 // src/pages/moduleClients/components/ClientDetail.tsx
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import MainLayout from '../../../layouts/MainLayout';
 import { useAllClients } from '../../../hooks/useClients';
 import { Client, Contact } from '../../../types/clientes.type';
 import '../../../styles/ClientDetail.css';
@@ -19,10 +20,11 @@ const ClientDetail: React.FC = () => {
     }, [clientsData, decodedClientId]);
 
     if (isLoading) return <p>Loading...</p>;
-    if (error) return <p style={{ color: 'red' }}>Error: {error.message}</p>;
+    if (error) return <p className="error-message">Error: {error.message}</p>;
     if (!clientData) return <p>No client data available for "{decodedClientId}".</p>;
 
     return (
+        <MainLayout>
         <div className="client-detail-container">
             {/* Client Info Row */}
             <div className="client-info-row">
@@ -52,6 +54,7 @@ const ClientDetail: React.FC = () => {
                 </div>
             )}
         </div>
+        </MainLayout>
     );
 };
 
