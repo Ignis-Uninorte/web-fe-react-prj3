@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Client } from '../../../types/clientes.type';
 import '../../../styles/clientTable.css';
-import { useToggleClientStatus } from '../../../hooks/useClients';
+import { getAllClients, toggleClientStatus } from '../../../services/clients.services'; // Cambia la ruta aquí
 
 const ClientTable: React.FC = () => {
     const [clients, setClients] = useState<Client[]>([]);
-    const toggleClientStatus = useToggleClientStatus();
     const navigate = useNavigate();
 
     // Fetch clients from the backend
     const fetchClients = async () => {
         try {
-            const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
-            const data = await response.json();
+            const data = await getAllClients(); // Usa el servicio
             setClients(data);
         } catch (error) {
             console.error('Error al obtener los clientes:', error);
@@ -27,23 +25,21 @@ const ClientTable: React.FC = () => {
     const handleUpdateClick = (client: Client) => {
         navigate(`/crear-cliente/${client.nit}`);
     };
-    
 
-    const handleToggle = (clientNit: number, currentStatus: boolean) => {
-        toggleClientStatus.mutate(
-            { clientId: clientNit, currentStatus },
-            {
-                onSuccess: () => {
-                    setClients((prevClients) =>
-                        prevClients.map((client) =>
-                            client.nit === clientNit
-                                ? { ...client, active: !currentStatus } // Toggle the active status
-                                : client
-                        )
-                    );
-                },
-            }
-        );
+    // Toggle client status (active/inactive) directly in the state
+    const handleToggle = async (clientNit: number, currentStatus: boolean) => {
+        try {
+            const updatedClient = await toggleClientStatus(clientNit, currentStatus); // Usa el servicio
+            setClients((prevClients) =>
+                prevClients.map((client) =>
+                    client.nit === clientNit
+                        ? { ...client, active: !currentStatus } // Toggle the active status
+                        : client
+                )
+            );
+        } catch (error) {
+            console.error('Error al actualizar el estado del cliente:', error);
+        }
     };
 
     return (
