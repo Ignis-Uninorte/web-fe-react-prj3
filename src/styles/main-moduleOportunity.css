@@ -1,4 +1,4 @@
-.body_moduleClient{
+.body_moduleOportunity{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     height: fit-content;
@@ -8,18 +8,16 @@
     text-align: center;
 }
 
-.btn_crearcliente{
-    background-color: #ff8d08;
-    color: white;
-    font-size: 24px;
-    padding: 14px 20px;
-    margin: 8px 0;
-    margin-left: 18px;
-    border: none;
-    cursor: pointer;
+.body_moduleOportunity h1 {
+    text-align: center;
 }
 
-
-.btn_crearcliente:hover {
-    opacity: 0.8;
+button{
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 12px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    opacity: 0.9;
 }

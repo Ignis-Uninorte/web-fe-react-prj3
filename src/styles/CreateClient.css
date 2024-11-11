@@ -1,4 +1,3 @@
-/* CreateClient.css */
 
 .container {
   display: flex;
@@ -6,14 +5,14 @@
   align-items: center;
   gap: 1.5rem;
   max-width: 90%;
-  width: 100%; /* Ajuste automático */
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: max-width 0.3s ease-in-out; /* Transición para suavizar el cambio */
+  transition: max-width 0.3s ease-in-out; /
 }
 
 .back{
@@ -73,7 +72,7 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  width: 100%; /* Asegura que cada grupo ocupe el ancho completo */
+  width: 100%;
   margin-top: 1rem;
 }
 
@@ -151,7 +150,7 @@ button[type="submit"]:hover {
 .form-group.checkbox-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Alinea los elementos al inicio del contenedor */
+  align-items: flex-start;
 }
 
 .form-group.checkbox-group label {
@@ -160,5 +159,5 @@ button[type="submit"]:hover {
 
 .form-group.checkbox-group input[type="checkbox"] {
   margin-top: 0.25rem;
-  transform: scale(1.2); /* Opcional: para agrandar un poco el checkbox */
+  transform: scale(1.2);
 }
