@@ -40,8 +40,8 @@ const Header: React.FC = () => {
                     {showDropdown && (
                         <div className="dropdown-menu" ref={dropdownRef}>
                             <ul>
-                                <li onClick={() => navigate('/')}>Dashboard</li>
-                                <li onClick={() => navigate('/clientes')}>Clientes</li>
+                                <li onClick={() => navigate('/dashboard')}>Dashboard</li>
+                                <li onClick={() => navigate('/')}>Clientes</li>
                                 <li onClick={() => navigate('/oportunidades')}>Oportunidades</li>
                                 <li onClick={() => navigate('/seguimiento')}>Seguimiento</li>
                             </ul>
