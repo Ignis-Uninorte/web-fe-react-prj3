@@ -6,7 +6,7 @@ import back from '../../../assets/back-arrow.svg';
 import '../../../styles/CreateOpportunity.css';
 
 interface OpportunityFormInputs {
-  Id?: number;
+  Id?: string; // Changed Id to string type
   clientId: string;
   businessName: string;
   businessLine: string;
@@ -30,7 +30,6 @@ const OpportunityForm: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
-    // Cargar clientes disponibles
     const fetchClients = async () => {
       try {
         const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
@@ -45,7 +44,6 @@ const OpportunityForm: React.FC = () => {
       }
     };
 
-    // Si hay un ID en la URL, estamos en modo de edición
     const fetchOpportunity = async () => {
       if (opportunityId) {
         setIsEditMode(true);
@@ -53,7 +51,6 @@ const OpportunityForm: React.FC = () => {
           const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/opportunities/${opportunityId}`);
           if (response.ok) {
             const data = await response.json();
-            // Cargar los datos en el formulario
             setValue('clientId', data.clientId);
             setValue('businessName', data.businessName);
             setValue('businessLine', data.businessLine);
@@ -74,20 +71,17 @@ const OpportunityForm: React.FC = () => {
     fetchOpportunity();
   }, [opportunityId, setValue]);
 
-  // Manejador de envío del formulario
   const onSubmit: SubmitHandler<OpportunityFormInputs> = async (data) => {
     if (isEditMode) {
-      // Modo edición: Actualizar la oportunidad existente
       try {
         const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/opportunities/${opportunityId}`, {
-          method: 'PUT', // Método PUT para actualizar
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data), // Convertir los datos del formulario a JSON
+          body: JSON.stringify(data),
         });
 
         if (response.ok) {
           setMessage('¡Oportunidad actualizada con éxito!');
-          // Esperar 2 segundos antes de redirigir a la lista de oportunidades
           setTimeout(() => {
             navigate('/oportunidades');
           }, 2000);
@@ -99,14 +93,14 @@ const OpportunityForm: React.FC = () => {
         setMessage('Error al conectarse con el servidor.');
       }
     } else {
-      // Modo creación: Crear una nueva oportunidad
       data.status = "Apertura";
       try {
         const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities');
         const opportunities = await response.json();
-        const maxId = opportunities.reduce((max: number, opp: { Id: number }) => Math.max(max, opp.Id || 0), 0);
+        const maxId = opportunities.reduce((max: number, opp: { Id: string }) => Math.max(max, parseInt(opp.Id, 10) || 0), 0);
+        
         const newOpportunity = {
-          Id: maxId + 1,
+          Id: (maxId + 1).toString(), // Ensure Id is stored as a string
           ...data,
         };
 
@@ -119,6 +113,9 @@ const OpportunityForm: React.FC = () => {
         if (submitResponse.ok) {
           setMessage('¡Oportunidad creada con éxito! Redirigiendo en 2seg');
           reset();
+          setTimeout(() => {
+            navigate('/oportunidades');
+          }, 2000);
         } else {
           setMessage('Error al crear la oportunidad.');
         }
@@ -128,7 +125,6 @@ const OpportunityForm: React.FC = () => {
       }
     }
   };
-
 
   return (
     <MainLayout>
@@ -148,7 +144,7 @@ const OpportunityForm: React.FC = () => {
             <select {...register('clientId', { required: 'El cliente es obligatorio' })}>
               <option value="">Seleccione un cliente</option>
               {clients.map(client => (
-                <option key={client.id} value={client.id}>
+                <option key={client.id} value={client.id.toString()}>
                   {client.name}
                 </option>
               ))}

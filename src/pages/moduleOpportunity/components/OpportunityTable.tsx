@@ -29,22 +29,29 @@ const OpportunityTable: React.FC = () => {
     };
 
     const handleDeleteClick = (opportunityId: string) => {
+        console.log("Delete clicked for opportunityId:", opportunityId);
         setSelectedOpportunityId(opportunityId);
         setIsModalOpen(true);
     };
 
     const confirmDelete = () => {
         if (selectedOpportunityId) {
+            console.log("Confirming delete for selectedOpportunityId:", selectedOpportunityId); // Log the ID being deleted
             deleteOpportunity.mutate(selectedOpportunityId, {
                 onSuccess: () => {
-                    
+                    console.log("Delete successful for opportunityId:", selectedOpportunityId);
                     setOpportunities(prevOpportunities =>
                         prevOpportunities.filter(opportunity => opportunity.Id !== selectedOpportunityId)
                     );
                     setIsModalOpen(false);
                     setSelectedOpportunityId(null);
                 },
+                onError: (error) => {
+                    console.error("Delete failed for opportunityId:", selectedOpportunityId, error);
+                }
             });
+        } else {
+            console.warn("No selectedOpportunityId found to delete.");
         }
     };
 
