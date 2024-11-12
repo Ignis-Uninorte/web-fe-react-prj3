@@ -42,6 +42,10 @@ const ClientTable: React.FC = () => {
         navigate(`/crear-cliente/${client.nit}`);
     };
 
+    const handleNameClick = (clientName: string) => {
+        navigate(`/client/${encodeURIComponent(clientName)}`); // Encodes the name for the URL
+    };
+
     const baseColumns = [
         {
             name: 'ID',
@@ -57,6 +61,14 @@ const ClientTable: React.FC = () => {
             name: 'Nombre',
             selector: (row: Client) => row.name,
             sortable: true,
+            cell: (row: Client) => (
+                <span
+                    onClick={() => handleNameClick(row.name)}
+                    style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                    {row.name}
+                </span>
+            ),
         },
         {
             name: 'Email',
