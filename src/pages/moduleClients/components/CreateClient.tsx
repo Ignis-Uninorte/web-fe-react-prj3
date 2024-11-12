@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';  
+import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import '../../../styles/CreateClient.css';
 import back from '../../../assets/back-arrow.svg';
@@ -12,7 +13,7 @@ interface Contact {
 }
 
 interface ClientFormInputs {
-  id: number;
+  id?: number;
   nit: string;
   name: string;
   address: string;
@@ -32,15 +33,16 @@ const CreateClient: React.FC = () => {
   });
   const [message, setMessage] = useState<string | null>(null);
   const [nextId, setNextId] = useState<number | null>(null);
+  const { nit } = useParams<{ nit: string }>();
+  const navigate = useNavigate();
+  const isEditing = !!nit; // Determines if we are in edit mode based on the presence of nit in the URL params
 
-  // Función para obtener el máximo Id actual de los clientes y calcular el siguiente Id
+  // Fetch next available ID for new clients if creating
   const fetchNextId = async () => {
     try {
       const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
       const clients = await response.json();
-
-      // Obtiene el Id máximo y calcula el siguiente
-      const maxId = clients.reduce((max: number, client: ClientFormInputs) => Math.max(max, client.id), 0);
+      const maxId = clients.reduce((max: number, client: ClientFormInputs) => Math.max(max, client.id || 0), 0);
       setNextId(maxId + 1);
     } catch (error) {
       console.error('Error al obtener el Id:', error);
@@ -48,40 +50,54 @@ const CreateClient: React.FC = () => {
     }
   };
 
-  // Llama a la función para obtener el próximo Id al cargar el componente
+  // Fetch client data if in edit mode
   useEffect(() => {
-    fetchNextId();
-  }, []);
+    if (isEditing) {
+      const fetchClientData = async () => {
+        try {
+          const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/clients/${nit}`);
+          if (response.ok) {
+            const clientData = await response.json();
+            reset(clientData); // Populate form with client data for editing
+          } else {
+            setMessage('Error al cargar los datos del cliente.');
+          }
+        } catch (error) {
+          console.error('Error al cargar los datos del cliente:', error);
+          setMessage('Error al conectarse con el servidor.');
+        }
+      };
+      fetchClientData();
+    } else {
+      fetchNextId();
+    }
+  }, [isEditing, nit, reset]);
 
+  // Form submission handler
   const onSubmit: SubmitHandler<ClientFormInputs> = async (data) => {
-    if (nextId === null) return;  // Asegura que nextId esté disponible antes de continuar
-  
-    const clientData = {
-      id: nextId, // Asigna el Id generado al cliente primero
-      nit: data.nit,
-      name: data.name,
-      address: data.address,
-      city: data.city,
-      country: data.country,
-      phone: data.phone,
-      corporateEmail: data.corporateEmail,
-      active: data.active,
-      contacts: data.contacts,
-    };
-  
+    const clientData = isEditing
+      ? data
+      : {
+          ...data,
+          id: nextId, // Assign generated ID if creating a new client
+        };
+
     try {
-      const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clientData),
-      });
-  
+      const response = await fetch(
+        `https://three-web-be-json-server-api-ignis.onrender.com/clients${isEditing ? `/${nit}` : ''}`,
+        {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(clientData),
+        }
+      );
+
       if (response.ok) {
-        setMessage('¡Cliente creado con éxito!');
-        reset(); // Resetear el formulario después de enviar
-        fetchNextId(); // Actualiza el siguiente Id para futuros clientes
+        setMessage(isEditing ? '¡Cliente actualizado con éxito!, Redirigiendo en 2seg' : '¡Cliente creado con éxito!');
+        if (!isEditing) reset(); // Reset form if creating a new client
+        setTimeout(() => navigate('/'), 2000); // Redirect after a delay
       } else {
-        setMessage('Error al crear el cliente.');
+        setMessage('Error al guardar el cliente.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -99,12 +115,16 @@ const CreateClient: React.FC = () => {
             </button>
           </div>
         </div>
-        <h2>Crear Nuevo Cliente</h2>
+        <h2>{isEditing ? 'Actualizar Cliente' : 'Crear Nuevo Cliente'}</h2>
         {message && <div className="notification">{message}</div>}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label>NIT:</label>
-            <input type="text" {...register('nit', { required: 'El NIT es obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })} />
+            <input
+              type="text"
+              {...register('nit', { required: 'El NIT es obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })}
+              disabled={isEditing} // Disable NIT field if editing
+            />
             {errors.nit && <span className="error">{errors.nit.message}</span>}
           </div>
 
@@ -116,19 +136,21 @@ const CreateClient: React.FC = () => {
 
           <div className="form-group">
             <label>Correo Corporativo:</label>
-            <input type="email" {...register('corporateEmail', { required: 'Correo obligatorio', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } })} />
+            <input
+              type="email"
+              {...register('corporateEmail', {
+                required: 'Correo obligatorio',
+                pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Correo inválido' },
+              })}
+            />
             {errors.corporateEmail && <span className="error">{errors.corporateEmail.message}</span>}
           </div>
 
           <div className="form-group">
             <label>Teléfono:</label>
-            <input 
-              type="text" 
-              {...register('phone', { 
-                required: 'Teléfono obligatorio', 
-                pattern: { value: /^\d+$/, message: 'Solo números' } 
-              })} 
-              inputMode="numeric" // Sugerir teclado numérico en dispositivos móviles
+            <input
+              type="text"
+              {...register('phone', { required: 'Teléfono obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })}
             />
             {errors.phone && <span className="error">{errors.phone.message}</span>}
           </div>
@@ -143,32 +165,24 @@ const CreateClient: React.FC = () => {
             <div key={field.id} className="contact-group">
               <input placeholder="Nombre" {...register(`contacts.${index}.name`, { required: 'Nombre obligatorio' })} />
               <input placeholder="Apellido" {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })} />
-              <input placeholder="Correo" {...register(`contacts.${index}.email`, { required: 'Correo obligatorio', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } })} />
-              <input 
-                placeholder="Teléfono" 
-                {...register(`contacts.${index}.phone`, { 
-                  required: 'Teléfono obligatorio', 
-                  pattern: { value: /^\d+$/, message: 'Solo números' } 
-                })} 
-                inputMode="numeric" // Sugerir teclado numérico en dispositivos móviles
-              />
+              <input placeholder="Correo" type="email" {...register(`contacts.${index}.email`, {
+                required: 'Correo obligatorio',
+                pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Correo inválido' },
+              })} />
+              <input placeholder="Teléfono" {...register(`contacts.${index}.phone`, {
+                required: 'Teléfono obligatorio',
+                pattern: { value: /^\d+$/, message: 'Solo números' },
+              })} />
 
-              <button type="button" onClick={() => remove(index)} className="delete-contact-btn">
-                🗑️ {/* Icono de basura */}
-              </button>
-
-              {errors.contacts?.[index]?.name && <span className="error">{errors.contacts[index].name?.message}</span>}
-              {errors.contacts?.[index]?.lastName && <span className="error">{errors.contacts[index].lastName?.message}</span>}
-              {errors.contacts?.[index]?.email && <span className="error">{errors.contacts[index].email?.message}</span>}
-              {errors.contacts?.[index]?.phone && <span className="error">{errors.contacts[index].phone?.message}</span>}
+              <button type="button" onClick={() => remove(index)} className="delete-contact-btn">🗑️</button>
             </div>
           ))}
+
           <div className="button-container">
             <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
               Agregar Contacto
             </button>
-
-            <button type="submit">Guardar Cliente</button>
+            <button type="submit">{isEditing ? 'Guardar Cambios' : 'Guardar Cliente'}</button>
           </div>
         </form>
       </div>
