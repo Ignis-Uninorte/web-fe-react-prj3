@@ -1,5 +1,4 @@
-
-.container {
+.container { 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,72 +11,40 @@
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: max-width 0.3s ease-in-out; /
-}
-
-.back{
-  margin-right: auto;
-  height: 0px;
-}
-
-button.back-btn {
-  background-color: #ffffff;
-  border: #ffffff;
-  cursor:pointer;
-}
-
-.back-arrow img {
-  width: 32px;
-  height: 57px;
-  padding-top: 20px;
-}
-
-h2 {
-  color: #333;
-  font-size: 1.8rem;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 1rem;
-  margin-top: 0px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #555;
-}
-
-.form-group input,
-.form-group select {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #4CAF50;
-  outline: none;
+  overflow: auto; /* Asegura que el contenido no se desborde */
+  transition: max-width 0.3s ease-in-out;
 }
 
 .contact-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea */
+  align-items: center;
+  gap: 0.5rem;
   width: 100%;
   margin-top: 1rem;
 }
 
 .contact-group input {
   flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.delete-contact-btn {
+  background: none;
+  border: none;
+  color: #d9534f;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.3s;
+  padding: 0;
+  align-self: center;
+}
+
+.delete-contact-btn:hover {
+  color: #c9302c;
 }
 
 .button-container {
@@ -131,20 +98,6 @@ button[type="submit"]:hover {
   color: #d9534f;
   font-size: 0.875rem;
   margin-top: 0.25rem;
-}
-
-.delete-contact-btn {
-  background: none;
-  border: none;
-  color: #d9534f;
-  font-size: 1.2rem;
-  cursor: pointer;
-  margin-left: 0.5rem;
-  transition: color 0.3s;
-}
-
-.delete-contact-btn:hover {
-  color: #c9302c;
 }
 
 .form-group.checkbox-group {

@@ -129,6 +129,7 @@ const OpportunityForm: React.FC = () => {
     }
   };
 
+
   return (
     <MainLayout>
       <div className="create-opportunity-form container">
