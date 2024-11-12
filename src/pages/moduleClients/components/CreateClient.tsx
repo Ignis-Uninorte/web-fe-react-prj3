@@ -35,9 +35,9 @@ const CreateClient: React.FC = () => {
   const [nextId, setNextId] = useState<number | null>(null);
   const { nit } = useParams<{ nit: string }>();
   const navigate = useNavigate();
-  const isEditing = !!nit; // Determines if we are in edit mode based on the presence of nit in the URL params
+  const isEditing = !!nit; 
 
-  // Fetch next available ID for new clients if creating
+  
   const fetchNextId = async () => {
     try {
       const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
@@ -50,7 +50,6 @@ const CreateClient: React.FC = () => {
     }
   };
 
-  // Fetch client data if in edit mode
   useEffect(() => {
     if (isEditing) {
       const fetchClientData = async () => {
@@ -58,7 +57,7 @@ const CreateClient: React.FC = () => {
           const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/clients/${nit}`);
           if (response.ok) {
             const clientData = await response.json();
-            reset(clientData); // Populate form with client data for editing
+            reset(clientData); 
           } else {
             setMessage('Error al cargar los datos del cliente.');
           }
@@ -73,13 +72,13 @@ const CreateClient: React.FC = () => {
     }
   }, [isEditing, nit, reset]);
 
-  // Form submission handler
+
   const onSubmit: SubmitHandler<ClientFormInputs> = async (data) => {
     const clientData = isEditing
       ? data
       : {
           ...data,
-          id: nextId, // Assign generated ID if creating a new client
+          id: nextId, 
         };
 
     try {
@@ -94,8 +93,8 @@ const CreateClient: React.FC = () => {
 
       if (response.ok) {
         setMessage(isEditing ? '¡Cliente actualizado con éxito!, Redirigiendo en 2seg' : '¡Cliente creado con éxito!');
-        if (!isEditing) reset(); // Reset form if creating a new client
-        setTimeout(() => navigate('/'), 2000); // Redirect after a delay
+        if (!isEditing) reset(); 
+        setTimeout(() => navigate('/'), 2000); 
       } else {
         setMessage('Error al guardar el cliente.');
       }
