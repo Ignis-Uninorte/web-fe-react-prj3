@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/CreateOpportunity.css';
 
 interface OpportunityFormInputs {
-  Id?: number; // Ensure 'Id' is optional
+  Id?: number;
   clientId: string;
   businessName: string;
   businessLine: string;
@@ -20,12 +21,16 @@ interface Client {
   name: string;
 }
 
-const CreateOpportunity: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<OpportunityFormInputs>();
+const OpportunityForm: React.FC = () => {
+  const { opportunityId } = useParams<{ opportunityId: string }>();
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<OpportunityFormInputs>();
   const [message, setMessage] = useState<string | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
+    // Cargar clientes disponibles
     const fetchClients = async () => {
       try {
         const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
@@ -40,40 +45,87 @@ const CreateOpportunity: React.FC = () => {
       }
     };
 
-    fetchClients();
-  }, []);
-
-  const onSubmit: SubmitHandler<OpportunityFormInputs> = async (data) => {
-    data.status = "Apertura"; // Estado predeterminado en la creación
-
-    try {
-      // Fetch de oportunidades existentes para determinar el ID más alto
-      const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities');
-      const opportunities = await response.json();
-
-      // Calcular el próximo ID único
-      const maxId = opportunities.reduce((max: number, opp: { Id: number }) => Math.max(max, opp.Id || 0), 0);
-      const newOpportunity = {
-        Id: maxId + 1,
-        ...data // Aseguramos que el Id sea la primera propiedad
-      };
-
-      // Enviar la nueva oportunidad con el ID autogenerado
-      const submitResponse = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newOpportunity),
-      });
-
-      if (submitResponse.ok) {
-        setMessage('¡Oportunidad creada con éxito!');
-        reset();
-      } else {
-        setMessage('Error al crear la oportunidad.');
+    // Si hay un ID en la URL, estamos en modo de edición
+    const fetchOpportunity = async () => {
+      if (opportunityId) {
+        setIsEditMode(true);
+        try {
+          const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/opportunities/${opportunityId}`);
+          if (response.ok) {
+            const data = await response.json();
+            // Cargar los datos en el formulario
+            setValue('clientId', data.clientId);
+            setValue('businessName', data.businessName);
+            setValue('businessLine', data.businessLine);
+            setValue('description', data.description);
+            setValue('estimatedValue', data.estimatedValue);
+            setValue('estimatedDate', data.estimatedDate);
+            setValue('status', data.status);
+          } else {
+            console.error('Error fetching opportunity');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setMessage('Error al conectarse con el servidor.');
+    };
+
+    fetchClients();
+    fetchOpportunity();
+  }, [opportunityId, setValue]);
+
+  // Manejador de envío del formulario
+  const onSubmit: SubmitHandler<OpportunityFormInputs> = async (data) => {
+    if (isEditMode) {
+      // Modo edición: Actualizar la oportunidad existente
+      try {
+        const response = await fetch(`https://three-web-be-json-server-api-ignis.onrender.com/opportunities/${opportunityId}`, {
+          method: 'PUT', // Método PUT para actualizar
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data), // Convertir los datos del formulario a JSON
+        });
+
+        if (response.ok) {
+          setMessage('¡Oportunidad actualizada con éxito!');
+          // Esperar 2 segundos antes de redirigir a la lista de oportunidades
+          setTimeout(() => {
+            navigate('/oportunidades');
+          }, 2000);
+        } else {
+          setMessage('Error al actualizar la oportunidad.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setMessage('Error al conectarse con el servidor.');
+      }
+    } else {
+      // Modo creación: Crear una nueva oportunidad
+      data.status = "Apertura";
+      try {
+        const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities');
+        const opportunities = await response.json();
+        const maxId = opportunities.reduce((max: number, opp: { Id: number }) => Math.max(max, opp.Id || 0), 0);
+        const newOpportunity = {
+          Id: maxId + 1,
+          ...data,
+        };
+
+        const submitResponse = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newOpportunity),
+        });
+
+        if (submitResponse.ok) {
+          setMessage('¡Oportunidad creada con éxito! Redirigiendo en 2seg');
+          reset();
+        } else {
+          setMessage('Error al crear la oportunidad.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setMessage('Error al conectarse con el servidor.');
+      }
     }
   };
 
@@ -88,7 +140,7 @@ const CreateOpportunity: React.FC = () => {
             </button>
           </div>
         </div>
-        <h2>Crear Nueva Oportunidad</h2>
+        <h2>{isEditMode ? 'Actualizar Oportunidad' : 'Crear Nueva Oportunidad'}</h2>
         {message && <div className="notification">{message}</div>}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
@@ -140,11 +192,13 @@ const CreateOpportunity: React.FC = () => {
             {errors.estimatedDate && <span className="error">{errors.estimatedDate.message}</span>}
           </div>
 
-          <button type="submit" className="submit-btn">Guardar Oportunidad</button>
+          <button type="submit" className="submit-btn">
+            {isEditMode ? 'Guardar Cambios' : 'Guardar Oportunidad'}
+          </button>
         </form>
       </div>
     </MainLayout>
   );
 };
 
-export default CreateOpportunity;
+export default OpportunityForm;
