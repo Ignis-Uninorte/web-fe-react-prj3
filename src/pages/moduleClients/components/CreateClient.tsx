@@ -1,75 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';  
+import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import MainLayout from '../../../layouts/MainLayout';
+import '../../../styles/CreateClient.css';
 import back from '../../../assets/back-arrow.svg';
-import '../../../styles/CreateOpportunity.css';
 
-interface OpportunityFormInputs {
-  Id?: number; // Ensure 'Id' is optional
-  clientId: string;
-  businessName: string;
-  businessLine: string;
-  description: string;
-  estimatedValue: number;
-  estimatedDate: string;
-  status: string;
-}
-
-interface Client {
-  id: number;
+interface Contact {
   name: string;
+  lastName: string;
+  email: string;
+  phone: string;
 }
 
-const CreateOpportunity: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<OpportunityFormInputs>();
+interface ClientFormInputs {
+  id: number;
+  nit: string;
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string;
+  corporateEmail: string;
+  active: boolean;
+  contacts: Contact[];
+}
+
+const CreateClient: React.FC = () => {
+  const { register, handleSubmit, control, formState: { errors }, reset } = useForm<ClientFormInputs>();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'contacts',
+  });
   const [message, setMessage] = useState<string | null>(null);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [nextId, setNextId] = useState<number | null>(null);
 
+  // Función para obtener el máximo Id actual de los clientes y calcular el siguiente Id
+  const fetchNextId = async () => {
+    try {
+      const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
+      const clients = await response.json();
+
+      // Obtiene el Id máximo y calcula el siguiente
+      const maxId = clients.reduce((max: number, client: ClientFormInputs) => Math.max(max, client.id), 0);
+      setNextId(maxId + 1);
+    } catch (error) {
+      console.error('Error al obtener el Id:', error);
+      setMessage('Error al obtener el ID para el cliente.');
+    }
+  };
+
+  // Llama a la función para obtener el próximo Id al cargar el componente
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients');
-        if (response.ok) {
-          const data = await response.json();
-          setClients(data);
-        } else {
-          console.error('Error fetching clients');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchClients();
+    fetchNextId();
   }, []);
 
-  const onSubmit: SubmitHandler<OpportunityFormInputs> = async (data) => {
-    data.status = "Apertura"; // Estado predeterminado en la creación
-
+  const onSubmit: SubmitHandler<ClientFormInputs> = async (data) => {
+    if (nextId === null) return;  // Asegura que nextId esté disponible antes de continuar
+  
+    const clientData = {
+      id: nextId, // Asigna el Id generado al cliente primero
+      nit: data.nit,
+      name: data.name,
+      address: data.address,
+      city: data.city,
+      country: data.country,
+      phone: data.phone,
+      corporateEmail: data.corporateEmail,
+      active: data.active,
+      contacts: data.contacts,
+    };
+  
     try {
-      // Fetch de oportunidades existentes para determinar el ID más alto
-      const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities');
-      const opportunities = await response.json();
-
-      // Calcular el próximo ID único
-      const maxId = opportunities.reduce((max: number, opp: { Id: number }) => Math.max(max, opp.Id || 0), 0);
-      const newOpportunity = {
-        Id: maxId + 1,
-        ...data // Aseguramos que el Id sea la primera propiedad
-      };
-
-      // Enviar la nueva oportunidad con el ID autogenerado
-      const submitResponse = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/opportunities', {
+      const response = await fetch('https://three-web-be-json-server-api-ignis.onrender.com/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newOpportunity),
+        body: JSON.stringify(clientData),
       });
-
-      if (submitResponse.ok) {
-        setMessage('¡Oportunidad creada con éxito!');
-        reset();
+  
+      if (response.ok) {
+        setMessage('¡Cliente creado con éxito!');
+        reset(); // Resetear el formulario después de enviar
+        fetchNextId(); // Actualiza el siguiente Id para futuros clientes
       } else {
-        setMessage('Error al crear la oportunidad.');
+        setMessage('Error al crear el cliente.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -77,10 +89,9 @@ const CreateOpportunity: React.FC = () => {
     }
   };
 
-
   return (
     <MainLayout>
-      <div className="create-opportunity-form container">
+      <div className="create-client-form container">
         <div className='back'>
           <div className='back-arrow'>
             <button onClick={() => window.history.back()} className="back-btn">
@@ -88,63 +99,81 @@ const CreateOpportunity: React.FC = () => {
             </button>
           </div>
         </div>
-        <h2>Crear Nueva Oportunidad</h2>
+        <h2>Crear Nuevo Cliente</h2>
         {message && <div className="notification">{message}</div>}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
-            <label>Cliente:</label>
-            <select {...register('clientId', { required: 'El cliente es obligatorio' })}>
-              <option value="">Seleccione un cliente</option>
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-            {errors.clientId && <span className="error">{errors.clientId.message}</span>}
+            <label>NIT:</label>
+            <input type="text" {...register('nit', { required: 'El NIT es obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })} />
+            {errors.nit && <span className="error">{errors.nit.message}</span>}
           </div>
 
           <div className="form-group">
-            <label>Nombre de Negocio:</label>
-            <input type="text" {...register('businessName', { required: 'Nombre de negocio es obligatorio' })} />
-            {errors.businessName && <span className="error">{errors.businessName.message}</span>}
+            <label>Nombre:</label>
+            <input type="text" {...register('name', { required: 'El nombre es obligatorio' })} />
+            {errors.name && <span className="error">{errors.name.message}</span>}
           </div>
 
           <div className="form-group">
-            <label>Línea de Negocio:</label>
-            <select {...register('businessLine', { required: 'Línea de negocio es obligatoria' })}>
-              <option value="">Seleccione la línea de negocio</option>
-              <option value="outsourcing recursos">Outsourcing Recursos</option>
-              <option value="desarrollo web">Desarrollo Web</option>
-              <option value="desarrollo mobile">Desarrollo Mobile</option>
-              <option value="consultoría TI">Consultoría TI</option>
-            </select>
-            {errors.businessLine && <span className="error">{errors.businessLine.message}</span>}
+            <label>Correo Corporativo:</label>
+            <input type="email" {...register('corporateEmail', { required: 'Correo obligatorio', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } })} />
+            {errors.corporateEmail && <span className="error">{errors.corporateEmail.message}</span>}
           </div>
 
           <div className="form-group">
-            <label>Descripción de la Oportunidad:</label>
-            <textarea {...register('description', { required: 'La descripción es obligatoria' })} />
-            {errors.description && <span className="error">{errors.description.message}</span>}
+            <label>Teléfono:</label>
+            <input 
+              type="text" 
+              {...register('phone', { 
+                required: 'Teléfono obligatorio', 
+                pattern: { value: /^\d+$/, message: 'Solo números' } 
+              })} 
+              inputMode="numeric" // Sugerir teclado numérico en dispositivos móviles
+            />
+            {errors.phone && <span className="error">{errors.phone.message}</span>}
           </div>
 
-          <div className="form-group">
-            <label>Valor Estimado (COP):</label>
-            <input type="number" {...register('estimatedValue', { required: 'Valor estimado es obligatorio' })} />
-            {errors.estimatedValue && <span className="error">{errors.estimatedValue.message}</span>}
+          <div className="form-group checkbox-group">
+            <label>Activo:</label>
+            <input type="checkbox" {...register('active')} />
           </div>
 
-          <div className="form-group">
-            <label>Fecha Estimada:</label>
-            <input type="date" {...register('estimatedDate', { required: 'Fecha estimada es obligatoria' })} />
-            {errors.estimatedDate && <span className="error">{errors.estimatedDate.message}</span>}
-          </div>
+          <h3>Contactos Asociados</h3>
+          {fields.map((field, index) => (
+            <div key={field.id} className="contact-group">
+              <input placeholder="Nombre" {...register(`contacts.${index}.name`, { required: 'Nombre obligatorio' })} />
+              <input placeholder="Apellido" {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })} />
+              <input placeholder="Correo" {...register(`contacts.${index}.email`, { required: 'Correo obligatorio', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } })} />
+              <input 
+                placeholder="Teléfono" 
+                {...register(`contacts.${index}.phone`, { 
+                  required: 'Teléfono obligatorio', 
+                  pattern: { value: /^\d+$/, message: 'Solo números' } 
+                })} 
+                inputMode="numeric" // Sugerir teclado numérico en dispositivos móviles
+              />
 
-          <button type="submit" className="submit-btn">Guardar Oportunidad</button>
+              <button type="button" onClick={() => remove(index)} className="delete-contact-btn">
+                🗑️ {/* Icono de basura */}
+              </button>
+
+              {errors.contacts?.[index]?.name && <span className="error">{errors.contacts[index].name?.message}</span>}
+              {errors.contacts?.[index]?.lastName && <span className="error">{errors.contacts[index].lastName?.message}</span>}
+              {errors.contacts?.[index]?.email && <span className="error">{errors.contacts[index].email?.message}</span>}
+              {errors.contacts?.[index]?.phone && <span className="error">{errors.contacts[index].phone?.message}</span>}
+            </div>
+          ))}
+          <div className="button-container">
+            <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
+              Agregar Contacto
+            </button>
+
+            <button type="submit">Guardar Cliente</button>
+          </div>
         </form>
       </div>
     </MainLayout>
   );
 };
 
-export default CreateOpportunity;
+export default CreateClient;
