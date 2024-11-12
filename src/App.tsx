@@ -18,8 +18,10 @@ function App() {
           <Route path="/crear-cliente" element={<CreateClient />} />
           <Route path="/crear-cliente/:nit" element={<CreateClient />} /> {/* Ruta para editar cliente */}
           <Route path="/client/:clientId" element={<ClientDetail />} />
+
           <Route path="/oportunidades" element={<ModuleOpportunity />} />
-          <Route path="/crear-oportunidad" element={<CreateOpportunity />} />
+          <Route path="/crear-oportunidad" element={<CreateOpportunity />} /> {/* Ruta para crear nueva oportunidad */}
+          <Route path="/opportunity/update/:opportunityId" element={<CreateOpportunity />} /> {/* Ruta para editar oportunidad */}
         </Routes>
       </Router>
     </QueryClientProvider>
