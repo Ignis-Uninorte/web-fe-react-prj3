@@ -123,7 +123,7 @@ const ClientTable: React.FC = () => {
                         headCells: {
                             style: {
                                 textAlign: 'center',
-                                backgroundColor: '#4CAF50',
+                                backgroundColor: '#0c1e2c',
                                 color: 'white',
                                 fontWeight: 'bold',
                             },

@@ -35,12 +35,12 @@
 }
 
 .opportunity-table th {
-    background-color: #4CAF50;
+    background-color: #0c1e2c;
     color: white;
     font-weight: bold;
 }
 
-.update-btn {
+.update-opp-btn {
     background-color: #007bff;
 }
 
@@ -58,4 +58,15 @@
 
 .inactive-row {
     color: red;
+}
+
+
+button{
+    background-color: #ff8d08;
+    color: white;
+    padding: 16px 12px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    opacity: 0.9;
 }

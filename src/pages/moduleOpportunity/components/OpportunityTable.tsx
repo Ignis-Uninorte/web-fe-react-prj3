@@ -64,7 +64,7 @@ const OpportunityTable: React.FC = () => {
         {
             label: 'Actualizar',
             onClick: (opportunity: Opportunity) => navigate(`/opportunity/update/${opportunity.Id}`),
-            className: 'action-btn update-btn',
+            className: 'action-btn update-opp-btn',
         },
         {
             label: 'Eliminar',
@@ -129,7 +129,7 @@ const OpportunityTable: React.FC = () => {
                         headCells: {
                             style: {
                                 textAlign: 'center',
-                                backgroundColor: '#4CAF50',
+                                backgroundColor: '#0c1e2c',
                                 color: 'white',
                                 fontWeight: 'bold',
                             },

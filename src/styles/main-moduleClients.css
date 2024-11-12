@@ -9,12 +9,14 @@
 }
 
 .btn_crearcliente{
+    display: flex;
+    justify-content: flex-start;
     background-color: #ff8d08;
     color: white;
     font-size: 24px;
     padding: 14px 20px;
     margin: 8px 0;
-    margin-left: 18px;
+    margin-left: 96px;
     border: none;
     cursor: pointer;
 }

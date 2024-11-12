@@ -10,9 +10,7 @@ const ModuleOportunity: React.FC = () => {
         <MainLayout>
             <div className="body_moduleOportunity">
                 <h1>Oportunidades</h1>
-                <button onClick={() => navigate('/crear-oportunidad')} className="btn_crearoportunidad">
-                    Crear Oportunidad
-                </button>
+                <button onClick={() => navigate('/crear-oportunidad')} className="btn_crearoportunidad"> <b>Crear Oportunidad</b></button>
                 <OportuniyTable />
             </div>
         </MainLayout>

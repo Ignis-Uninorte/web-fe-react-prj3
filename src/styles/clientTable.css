@@ -25,7 +25,6 @@
     width: 150px; 
 }
 
-
 .btns-line {
     display: flex;
     padding: 10px 0;
@@ -42,18 +41,22 @@
 }
 
 .update-btn {
-    background-color: #ff8d08;
+    background-color: #004aad;
+    border-radius: 8px;    
 }
 
+
 .action-btn.update-btn:disabled {
-    background-color: #cccccc;
-    color: #666666;
+    background-color: #fcfbfc;
+    border: 2px solid #004aad;
+    color: #004aad;
     cursor: not-allowed;
-    opacity: 0.6;
 }
 
 .toggle-btn {
-    background-color: #004aad;
+    background-color: #ff8d08;
+    width: 80px;
+    border-radius: 8px;
 }
 
 
