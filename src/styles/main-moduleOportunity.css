@@ -12,12 +12,17 @@
     text-align: center;
 }
 
-button{
-    background-color: #4CAF50;
+.btn_crearoportunity{    
+    display: flex;
+    justify-content: flex-start;
+    background-color: #ff8d08;
     color: white;
     padding: 16px 12px;
     margin: 8px 0;
     border: none;
     cursor: pointer;
-    opacity: 0.9;
+}
+
+.btn_crearoportunity:hover {
+    opacity: 0.8;
 }

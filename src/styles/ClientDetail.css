@@ -125,3 +125,46 @@ button.back-btn {
     background-color: #f0f0f0;
     font-weight: bold;
 }
+
+/* Opportunities Section */
+.opportunities-title {
+    margin-top: 30px;
+    font-size: 1.25rem;
+}
+
+.opportunities-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.opportunities-table th,
+.opportunities-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.opportunities-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.opportunities-table td {
+    background-color: #ffffff;
+}
+
+.seguimiento-btn {
+    background-color: #fd8916;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.seguimiento-btn:hover {
+    background-color: #e07813;
+}
+
