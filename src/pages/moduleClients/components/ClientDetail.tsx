@@ -6,12 +6,13 @@ import { useAllClients } from '../../../hooks/useClients';
 import { Client, Contact } from '../../../types/clientes.type';
 import { Opportunity } from '../../../types/opportunities.type'; // Import Opportunity type
 import { useAllOpportunities } from '../../../hooks/useOpportunities';
+import { useNavigate } from 'react-router-dom';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/ClientDetail.css';
 
 const ClientDetail: React.FC = () => {
     const { clientId } = useParams<{ clientId: string }>();
-
+    const navigate = useNavigate();
     const decodedClientId = clientId ? decodeURIComponent(clientId) : '';
     const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useAllClients();
     const { data: opportunitiesData, isLoading: opportunitiesLoading, error: opportunitiesError } = useAllOpportunities();
@@ -28,6 +29,11 @@ const ClientDetail: React.FC = () => {
         if (!opportunitiesData || !clientData) return [];
         return opportunitiesData.filter((opp: Opportunity) => opp.clientId === clientData.id.toString());
     }, [opportunitiesData, clientData]);
+
+    const handleNameClick = (opportunityId: number) => {
+        navigate(`/opportunity/${opportunityId}`); // Use ID for redirection
+    };
+
 
     if (clientsLoading || opportunitiesLoading) return <p>Loading...</p>;
     if (clientsError) return <p className="error-message">Error: {clientsError.message}</p>;
@@ -89,7 +95,7 @@ const ClientDetail: React.FC = () => {
                     <table className="opportunities-table">
                         <thead>
                             <tr>
-                                <th>Nombre del Negocio</th>
+                                <th>Nombre de Oportunidad   </th>
                                 <th>Línea de Negocio</th>
                                 <th>Descripción</th>
                                 <th>Valor Estimado</th>
@@ -101,7 +107,14 @@ const ClientDetail: React.FC = () => {
                         <tbody>
                             {clientOpportunities.map((opp: Opportunity) => (
                                 <tr key={opp.Id}>
-                                    <td>{opp.businessName}</td>
+                                    <td>
+                                        <span
+                                            onClick={() => handleNameClick(Number(opp.Id))}
+                                            style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                                        >
+                                            {opp.businessName}
+                                        </span>
+                                    </td>
                                     <td>{opp.businessLine}</td>
                                     <td>{opp.description}</td>
                                     <td>{opp.estimatedValue}</td>
