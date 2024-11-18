@@ -1,0 +1,68 @@
+/* Opportunity Details Container */
+.opportunity-detail-container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+/* Back Button */
+.back-arrow {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+}
+
+button.back-btn {
+    background-color: #ffffff;
+    border: none;
+    cursor: pointer;
+}
+
+.back-arrow img {
+    width: 32px;
+    height: 57px;
+    margin-right: 10px;
+}
+
+/* Title */
+.opportunity-detail-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+/* Opportunity Info Grid */
+.opportunity-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.opportunity-info-grid div {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Status Styling */
+.opportunity-status p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.status-open {
+    color: green;
+}
+
+.status-closed {
+    color: red;
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+}

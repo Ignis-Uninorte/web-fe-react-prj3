@@ -8,6 +8,7 @@ import ModuleOpportunity from './pages/moduleOpportunity/main';
 import CreateOpportunity from './pages/moduleOpportunity/components/CreateOpportunity';
 import CreateActivity from './pages/moduleActivity/components/CreateActivity'; // Import your new component
 import ModuleActivity from './pages/moduleActivity/main';
+import OpportunityDetail from './pages/moduleOpportunity/components/OpportunityDetail';
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ function App() {
           <Route path="/crear-cliente" element={<CreateClient />} />
           <Route path="/crear-cliente/:nit" element={<CreateClient />} /> {/* Ruta para editar cliente */}
           <Route path="/client/:clientId" element={<ClientDetail />} />
-
+          <Route path="/opportunity/:opportunityId" element={<OpportunityDetail />} />
           <Route path="/oportunidades" element={<ModuleOpportunity />} />
           <Route path="/crear-oportunidad" element={<CreateOpportunity />} /> {/* Ruta para crear nueva oportunidad */}
           <Route path="/opportunity/update/:opportunityId" element={<CreateOpportunity />} /> {/* Ruta para editar oportunidad */}

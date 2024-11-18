@@ -117,7 +117,6 @@ const ClientTable: React.FC = () => {
                     columns={columnsConfig({ baseColumns, customColumns })}
                     data={clients}
                     pagination
-                    onRowClicked={(row) => handleUpdateClick(row)} // Redirige al hacer clic en la fila
                     className="client-table"
                     customStyles={{
                         headCells: {
