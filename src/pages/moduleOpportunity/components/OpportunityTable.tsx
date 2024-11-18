@@ -1,4 +1,3 @@
-// OpportunityTable.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Opportunity } from '../../../types/opportunities.type';
@@ -24,40 +23,32 @@ const OpportunityTable: React.FC = () => {
         }
     }, [isSuccess, opportunitiesData]);
 
-    const handleRowClick = (opportunityId: number) => {
-        navigate(`/opportunity/${opportunityId}`);
-    };
-
     const handleDeleteClick = (opportunityId: string) => {
-        console.log("Delete clicked for opportunityId:", opportunityId);
         setSelectedOpportunityId(opportunityId);
         setIsModalOpen(true);
     };
 
     const confirmDelete = () => {
         if (selectedOpportunityId) {
-            console.log("Confirming delete for selectedOpportunityId:", selectedOpportunityId); // Log the ID being deleted
             deleteOpportunity.mutate(selectedOpportunityId, {
                 onSuccess: () => {
-                    console.log("Delete successful for opportunityId:", selectedOpportunityId);
                     setOpportunities(prevOpportunities =>
                         prevOpportunities.filter(opportunity => opportunity.Id !== selectedOpportunityId)
                     );
                     setIsModalOpen(false);
                     setSelectedOpportunityId(null);
                 },
-                onError: (error) => {
-                    console.error("Delete failed for opportunityId:", selectedOpportunityId, error);
-                }
             });
-        } else {
-            console.warn("No selectedOpportunityId found to delete.");
         }
     };
 
     const cancelDelete = () => {
         setIsModalOpen(false);
         setSelectedOpportunityId(null);
+    };
+
+    const handleNameClick = (opportunityId: number) => {
+        navigate(`/opportunity/${opportunityId}`); // Use ID for redirection
     };
 
     const actionButtons = [
@@ -83,6 +74,14 @@ const OpportunityTable: React.FC = () => {
             name: 'Nombre',
             selector: (row: Opportunity) => row.businessName,
             sortable: true,
+            cell: (row: Opportunity) => (
+                <span
+                    onClick={() => handleNameClick(Number(row.Id))}
+                    style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                    {row.businessName}
+                </span>
+            ),
         },
         {
             name: 'Linea de negocio',
@@ -93,7 +92,6 @@ const OpportunityTable: React.FC = () => {
             name: 'Estado',
             selector: (row: Opportunity) => row.status,
             sortable: true,
-            cell: (row: Opportunity) => <div>{row.status}</div>,
         },
         {
             name: 'Fecha de realización',
@@ -123,8 +121,7 @@ const OpportunityTable: React.FC = () => {
                     columns={columnsConfig({ baseColumns, customColumns })}
                     data={opportunities}
                     pagination
-                    onRowClicked={(row) => handleRowClick(Number(row.Id))}
-                    className='opportunity-table'
+                    className="opportunity-table"
                     customStyles={{
                         headCells: {
                             style: {
