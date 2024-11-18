@@ -5,6 +5,7 @@ export interface Activity {
     contactType: string;
     contactDate: string;
     clientContact: string;
+    commercialExecutive: String;
     description: string;
 }
 

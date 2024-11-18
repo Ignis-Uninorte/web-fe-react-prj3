@@ -1,4 +1,4 @@
-.modal-overlay {
+.modal-overlay { 
     position: fixed;
     top: 0;
     left: 0;
@@ -46,6 +46,43 @@
 }
 
 .form-buttons {
-    display: flex;
-    justify-content: space-between;
+    gap: 10px; /* Espacio entre los botones */
+    width: 100%; /* Asegura que los botones ocupen todo el ancho disponible */
+}
+
+/* Estilos comunes para los botones */
+.form-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex; /* Asegura que los botones tengan el mismo tamaño */
+    align-items: center;  /* Centra el contenido dentro del botón */
+    justify-content: center; /* Centra el texto dentro del botón */
+    box-sizing: border-box; /* Asegura que el padding no afecte al tamaño total */
+    width: 120px; /* Ancho fijo para ambos botones */
+    height: 40px; /* Altura fija para ambos botones */
+    line-height: normal; /* Asegura que el texto esté centrado verticalmente */
+}
+
+/* Estilo para el botón "Save" */
+.save-button {
+    background-color: #4CAF50; /* Color de fondo verde */
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #45a049; /* Cambio de color al pasar el ratón */
+}
+
+/* Estilo para el botón "Cancel" */
+.cancel-button {
+    background-color: #f44336; /* Color de fondo rojo */
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #e53935; /* Cambio de color al pasar el ratón */
 }

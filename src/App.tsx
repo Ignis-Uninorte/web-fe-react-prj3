@@ -7,6 +7,7 @@ import ClientDetail from './pages/moduleClients/components/ClientDetail';
 import ModuleOpportunity from './pages/moduleOpportunity/main';
 import CreateOpportunity from './pages/moduleOpportunity/components/CreateOpportunity';
 import CreateActivity from './pages/moduleActivity/components/CreateActivity'; // Import your new component
+import ModuleActivity from './pages/moduleActivity/main';
 
 const queryClient = new QueryClient();
 
@@ -30,10 +31,12 @@ function App() {
           <Route path="/opportunity/update/:opportunityId" element={<CreateOpportunity />} /> {/* Ruta para editar oportunidad */}
 
           {/* Pass the onClose prop to CreateActivity */}
+          <Route path="/actividades" element={<ModuleActivity />} />
           <Route
             path="/crear-actividad"
-            element={<CreateActivity onClose={handleClose} />}
+            element={<CreateActivity onClose={handleClose} />} // Ruta para crear nueva actividad sin opportunityId
           />
+
         </Routes>
       </Router>
     </QueryClientProvider>

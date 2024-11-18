@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ActivityFormInputs } from '../pages/moduleActivity/components/CreateActivity'; // Adjust the import path as necessary
+import { ActivityFormInputs } from '../pages/moduleActivity/components/CreateActivity'; // Ajusta la ruta de importación si es necesario
 
 const API_URL = 'https://three-web-be-json-server-api-ignis.onrender.com/activities';
 
-// Define the return type of the response
+// Define el tipo de la respuesta
 interface Activity {
     id: number;
     contactType: string;
@@ -12,12 +12,15 @@ interface Activity {
     description: string;
 }
 
-// Define the hook for submitting an activity
+// Define el hook para enviar la actividad
 export const useSubmitActivity = () => {
     const queryClient = useQueryClient();
 
-    // The mutation function should be an async function that returns the created activity
+    // La función de mutación debería ser una función asincrónica que devuelve la actividad creada
+    // Manejo de errores mejorado
     const submitActivity = async (newActivity: ActivityFormInputs): Promise<Activity> => {
+        console.log('Enviando actividad:', newActivity);
+
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -27,26 +30,34 @@ export const useSubmitActivity = () => {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create activity');
+            const errorData = await response.json();
+            console.error('Error de respuesta:', errorData); 
+            throw new Error(`Error al crear la actividad: ${errorData.error || 'Desconocido'}`);
         }
 
-        return response.json() as Promise<Activity>; // Type the response as `Activity`
+        const responseData = await response.json();
+        if (!responseData.id) {
+            throw new Error('La respuesta de la actividad no contiene un ID válido');
+        }
+
+        return responseData;
     };
 
     return useMutation<Activity, Error, ActivityFormInputs>({
         mutationFn: submitActivity,
         onSuccess: (data) => {
-            // Invalidate the query for 'activities'
-            queryClient.invalidateQueries({ queryKey: ['activities'] }); // Standard query key type
+            console.log('Actividad creada con éxito:', data); // Depuración: muestra los datos de la actividad creada
 
-            // Optionally, refetch the activities or update the query data with the new activity
+            // Invalida la consulta para 'activities' y actualiza la caché
+            queryClient.invalidateQueries({ queryKey: ['activities'] });
+
+            // Actualiza los datos de la consulta con la nueva actividad
             queryClient.setQueryData(['activities'], (oldData: Activity[] | undefined) => {
-                // Ensure oldData is typed as Activity[] and handle undefined case
                 return oldData ? [...oldData, data] : [data];
             });
         },
         onError: (error: Error) => {
-            console.error('Error creating activity:', error);
+            console.error('Error al crear la actividad:', error); // Muestra el error completo
         },
     });
 };
