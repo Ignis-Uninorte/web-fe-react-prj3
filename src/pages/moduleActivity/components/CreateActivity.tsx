@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useFetchActivities } from '../../../hooks/useFetchActivities'; // Importamos el hook correcto
+import { useAllOpportunities } from '../../../hooks/useOpportunities'; // Usamos el hook de oportunidades
 import { useSubmitActivity } from '../../../hooks/useSubmitActivity';
 import '../../../styles/CreateActivity.css';
-import { Activity } from '../../../hooks/useFetchActivities'; // Importamos la interfaz desde el hook
+import { useFetchActivities } from '../../../hooks/useFetchActivities'; // Importamos la interfaz desde el hook
 
 export interface ActivityFormInputs {
     id?: number;
+    opportunityId: number; // Añadimos el campo opportunityId
     contactType: string;
     contactDate: string;
     clientContact: string;
     commercialExecutive: string;
     description: string;
+}
+
+interface Opportunity {
+    Id: string;  // El Id de la oportunidad, ajusta el tipo si es necesario
+    businessName: string;
 }
 
 interface CreateActivityProps {
@@ -21,7 +27,8 @@ interface CreateActivityProps {
 const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ActivityFormInputs>();
     const [newId, setNewId] = useState<number | null>(null);
-    const { data: activities, isLoading, isError } = useFetchActivities(); // Usamos el hook actualizado
+    const { data: activities, isLoading: activitiesLoading, isError: activitiesError } = useFetchActivities(); // Usamos el hook actualizado
+    const { data: opportunities, isLoading: opportunitiesLoading, isError: opportunitiesError } = useAllOpportunities(); // Usamos el hook de oportunidades
     const { mutateAsync: submitActivity, isError: isSubmitError, isSuccess } = useSubmitActivity();
 
     // Calcular el ID más alto entre las actividades existentes
@@ -51,8 +58,8 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
         }
     };
 
-    if (isLoading) return <p>Loading activities...</p>;
-    if (isError) return <p>Failed to load activities.</p>;
+    if (activitiesLoading || opportunitiesLoading) return <p>Loading...</p>;
+    if (activitiesError || opportunitiesError) return <p>Failed to load data.</p>;
 
     return (
         <div className="modal-overlay">
@@ -60,6 +67,19 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
                 <button className="close-btn" onClick={onClose}>X</button>
                 <h2>Create Follow-up Activity</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="form-group">
+                        <label>Opportunity:</label>
+                        <select {...register('opportunityId', { required: 'Opportunity is required' })}>
+                            <option value="">Select Opportunity</option>
+                            {opportunities?.map((opportunity: Opportunity) => (
+                                <option key={opportunity.Id} value={opportunity.Id}>
+                                    {opportunity.businessName}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.opportunityId && <span className="error">{errors.opportunityId.message}</span>}
+                    </div>
+
                     <div className="form-group">
                         <label>Contact Type:</label>
                         <select {...register('contactType', { required: 'Contact type is required' })}>
