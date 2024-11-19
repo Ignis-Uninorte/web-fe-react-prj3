@@ -1,19 +1,11 @@
+import { FollowUp } from '../types/followup.type';
 import { useQuery } from '@tanstack/react-query';
-
-export interface Activity {
-    id: number;
-    contactType: string;
-    contactDate: string;
-    clientContact: string;
-    commercialExecutive: String;
-    description: string;
-}
 
 const API_URL = 'https://three-web-be-json-server-api-ignis.onrender.com/activities';
 
 export const useFetchActivities = () => {
-    return useQuery<Activity[], Error>({
-        queryKey: ['activities'], // Key used to identify this query
+    return useQuery<FollowUp[], Error>({
+        queryKey: ['activities'], 
         queryFn: async () => {
             const response = await fetch(API_URL);
             if (!response.ok) {
