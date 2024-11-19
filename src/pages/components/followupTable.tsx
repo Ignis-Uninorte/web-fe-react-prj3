@@ -31,28 +31,28 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
     }, [isSuccess, followUpData, idOpportunity]);
 
     const handleDeleteClick = (followUp: FollowUp) => {
-        setSelectedFollowUp(followUp); // Store the selected follow-up
-        setIsModalOpen(true); // Open the confirmation modal
+        setSelectedFollowUp(followUp); 
+        setIsModalOpen(true); 
     };
 
     const confirmDelete = () => {
         if (selectedFollowUp) {
             deleteFollowUp.mutate(selectedFollowUp.id, {
                 onSuccess: () => {
-                    // Update the table by re-fetching follow-ups
+                    
                     setFollowUps((prevFollowUps) =>
                         prevFollowUps.filter((f) => f.id !== selectedFollowUp.id)
                     );
                     setSelectedFollowUp(null);
-                    setIsModalOpen(false); // Close the modal
+                    setIsModalOpen(false); 
                 },
             });
         }
     };
 
     const cancelDelete = () => {
-        setSelectedFollowUp(null); // Clear the selected follow-up
-        setIsModalOpen(false); // Close the modal
+        setSelectedFollowUp(null); 
+        setIsModalOpen(false); 
     };
 
     const actionButtons = [
