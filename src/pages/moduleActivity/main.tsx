@@ -10,7 +10,7 @@ const ModuleActivity: React.FC = () => {
         <MainLayout>
             <div className="body_moduleActivity">
                 <h1>Seguimiento</h1>
-                <button onClick={() => navigate('/crear-actividad')} className="btn_crearactividad"> <b>Crear Actividad</b></button>
+                <button onClick={() => navigate('/crear-seguimiento')} className="btn_crearactividad"> <b>Crear Seguimiento</b></button>
                 <FollowUpTable />
             </div>
         </MainLayout>
