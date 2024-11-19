@@ -7,3 +7,11 @@ export function getAllFollowUps(){
         throw error;
     });
 }
+
+export function deleteFollowUp(id: number) {
+    return apiManager.delete(`/activities/${id}`)
+        .then(response => response.data)
+        .catch(error => {
+            throw error;
+        });
+}

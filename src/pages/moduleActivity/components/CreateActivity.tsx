@@ -4,6 +4,9 @@ import { useAllOpportunities } from '../../../hooks/useOpportunities'; // Usamos
 import { useSubmitActivity } from '../../../hooks/useSubmitActivity';
 import '../../../styles/CreateActivity.css';
 import { useFetchActivities } from '../../../hooks/useFetchActivities'; // Importamos la interfaz desde el hook
+import MainLayout from '../../../layouts/MainLayout';
+import back from '../../../assets/back-arrow.svg';
+
 
 export interface ActivityFormInputs {
     id?: number;
@@ -62,10 +65,18 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
     if (activitiesError || opportunitiesError) return <p>Failed to load data.</p>;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <button className="close-btn" onClick={onClose}>X</button>
+        <MainLayout>
+            <div className="create-activity-form container">
+                <div className="back">
+                    <div className="back-arrow">
+                        <button onClick={() => window.history.back()} className="back-btn">
+                            <img src={back} alt="Back" />
+                        </button>
+                    </div>
+                </div>
                 <h2>Create Follow-up Activity</h2>
+                {isSuccess && <div className="success-message">Activity successfully created!</div>}
+                {isSubmitError && <div className="error-message">Error creating activity. Please try again.</div>}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
                         <label>Opportunity:</label>
@@ -93,10 +104,7 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
 
                     <div className="form-group">
                         <label>Contact Date:</label>
-                        <input
-                            type="date"
-                            {...register('contactDate', { required: 'Contact date is required' })}
-                        />
+                        <input type="date" {...register('contactDate', { required: 'Contact date is required' })} />
                         {errors.contactDate && <span className="error">{errors.contactDate.message}</span>}
                     </div>
 
@@ -124,22 +132,22 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
 
                     <div className="form-group">
                         <label>Description:</label>
-                        <textarea
-                            {...register('description', { required: 'Description is required' })}
-                        />
+                        <textarea {...register('description', { required: 'Description is required' })} />
                         {errors.description && <span className="error">{errors.description.message}</span>}
                     </div>
 
-                    {isSubmitError && <div className="error-message">Error creating activity. Please try again.</div>}
-                    {isSuccess && <div className="success-message">Activity successfully created!</div>}
-
                     <div className="form-buttons">
-                        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
-                        <button type="submit" className="save-btn" disabled={newId === null}>Save</button>
+                        <button onClick={() => window.history.back()} type="button" className="cancel-btn">
+                            Cancel
+                        </button>
+                        <button type="submit" className="submit-btn">
+                            Save
+                        </button>
                     </div>
                 </form>
             </div>
-        </div>
+
+        </MainLayout>
     );
 };
 

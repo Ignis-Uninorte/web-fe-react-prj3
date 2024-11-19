@@ -6,7 +6,7 @@ import { useAllOpportunities, useDeleteOpportunity } from '../../../hooks/useOpp
 import DataTable from 'react-data-table-component';
 import columnsConfig from '../../components/columnConfig';
 import ActionButtons from '../../components/actionButtons';
-import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const OpportunityTable: React.FC = () => {
     const { isLoading, isSuccess, isError, data: opportunitiesData } = useAllOpportunities();
