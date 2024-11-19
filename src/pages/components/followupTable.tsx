@@ -1,43 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FollowUp } from '../../types/followup.type';
-import { useAllFollowUps } from '../../hooks/useFollowup';
+import { useAllFollowUps, useDeleteFollowUp } from '../../hooks/useFollowup';
 import DataTable from 'react-data-table-component';
 import columnsConfig from './columnConfig';
 import ActionButtons from './actionButtons';
+import DeleteConfirmationModal from '../moduleOpportunity/components/DeleteConfirmationModal';
 
 interface FollowUpTableProps {
     idOpportunity?: number;
 }
 
-const FollowUpTable: React.FC<FollowUpTableProps> = ({idOpportunity}: FollowUpTableProps) => {
+const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
     const { isLoading, isSuccess, isError, data: followUpData } = useAllFollowUps();
+    const deleteFollowUp = useDeleteFollowUp();
     const navigate = useNavigate();
-    const [opportunities, setFollowUps] = useState<FollowUp[]>([]);
+
+    const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+    const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (isSuccess && followUpData) {
             let data = followUpData;
-            if (idOpportunity != null){
+            if (idOpportunity != null) {
                 data = followUpData.filter((followUp: FollowUp) => followUp.opportunityId === idOpportunity);
             }
             setFollowUps(data);
         }
-    }, [isSuccess, followUpData, idOpportunity]);;
+    }, [isSuccess, followUpData, idOpportunity]);
 
-    const handleNameClick = (followUpId: number) => {
-        navigate(`/activities/${followUpId}`);
+    const handleDeleteClick = (followUp: FollowUp) => {
+        setSelectedFollowUp(followUp); // Store the selected follow-up
+        setIsModalOpen(true); // Open the confirmation modal
+    };
+
+    const confirmDelete = () => {
+        if (selectedFollowUp) {
+            deleteFollowUp.mutate(selectedFollowUp.id, {
+                onSuccess: () => {
+                    // Update the table by re-fetching follow-ups
+                    setFollowUps((prevFollowUps) =>
+                        prevFollowUps.filter((f) => f.id !== selectedFollowUp.id)
+                    );
+                    setSelectedFollowUp(null);
+                    setIsModalOpen(false); // Close the modal
+                },
+            });
+        }
+    };
+
+    const cancelDelete = () => {
+        setSelectedFollowUp(null); // Clear the selected follow-up
+        setIsModalOpen(false); // Close the modal
     };
 
     const actionButtons = [
         {
             label: 'Actualizar',
-            onClick: (followup: FollowUp) => (console.log(followup)),
+            onClick: (followUp: FollowUp) => navigate(`/activities/update/${followUp.id}`),
             className: 'action-btn update-opp-btn',
         },
         {
             label: 'Eliminar',
-            onClick: (followup: FollowUp) =>  (console.log(followup)),
+            onClick: handleDeleteClick,
             className: 'action-btn delete-btn',
         },
     ];
@@ -54,7 +80,7 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({idOpportunity}: FollowUpTa
             sortable: true,
             cell: (row: FollowUp) => (
                 <span
-                    onClick={() => handleNameClick(Number(row.id))}
+                    onClick={() => navigate(`/activities/${row.id}`)}
                     style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
                 >
                     {row.opportunityId}
@@ -96,7 +122,7 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({idOpportunity}: FollowUpTa
             {!isLoading && !isError && isSuccess && (
                 <DataTable
                     columns={columnsConfig({ baseColumns, customColumns })}
-                    data={opportunities}
+                    data={followUps}
                     pagination
                     className="followup-table"
                     customStyles={{
@@ -118,6 +144,13 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({idOpportunity}: FollowUpTa
                     }}
                 />
             )}
+
+            {/* Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={isModalOpen}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 };
