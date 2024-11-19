@@ -13,8 +13,6 @@
 }
 
 .btn_crearactividad{    
-    display: flex;
-    justify-content: flex-start;
     background-color: #ff8d08;
     color: white;
     padding: 16px 12px;

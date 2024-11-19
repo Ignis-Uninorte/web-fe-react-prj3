@@ -1,25 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FollowUp} from '../types/followup.type'; 
 import { ActivityFormInputs } from '../pages/moduleActivity/components/CreateActivity'; // Ajusta la ruta de importación si es necesario
 
 const API_URL = 'https://three-web-be-json-server-api-ignis.onrender.com/activities';
 
-// Define el tipo de la respuesta
-interface Activity {
-    id: number;
-    opportunityId: number;  // Se añade el campo opportunityId
-    contactType: string;
-    contactDate: string;
-    clientContact: string;
-    description: string;
-}
 
-// Define el hook para enviar la actividad
 export const useSubmitActivity = () => {
     const queryClient = useQueryClient();
-
-    // La función de mutación debería ser una función asincrónica que devuelve la actividad creada
-    // Manejo de errores mejorado
-    const submitActivity = async (newActivity: ActivityFormInputs): Promise<Activity> => {
+    const submitActivity = async (newActivity: ActivityFormInputs): Promise<FollowUp> => {
         console.log('Enviando actividad:', newActivity);
 
         const response = await fetch(API_URL, {
@@ -44,7 +32,7 @@ export const useSubmitActivity = () => {
         }
 
         const responseData = await response.json();
-        console.log('Respuesta de la API:', responseData); // Añadir esta línea para ver los datos de la respuesta
+        console.log('Respuesta de la API:', responseData);
 
         if (!responseData.id) {
             throw new Error('La respuesta de la actividad no contiene un ID válido');
@@ -54,7 +42,7 @@ export const useSubmitActivity = () => {
     };
 
 
-    return useMutation<Activity, Error, ActivityFormInputs>({
+    return useMutation<FollowUp, Error, ActivityFormInputs>({
         mutationFn: submitActivity,
         onSuccess: (data) => {
             console.log('Actividad creada con éxito:', data); // Depuración: muestra los datos de la actividad creada
@@ -63,7 +51,7 @@ export const useSubmitActivity = () => {
             queryClient.invalidateQueries({ queryKey: ['activities'] });
 
             // Actualiza los datos de la consulta con la nueva actividad
-            queryClient.setQueryData(['activities'], (oldData: Activity[] | undefined) => {
+            queryClient.setQueryData(['activities'], (oldData: FollowUp[] | undefined) => {
                 return oldData ? [...oldData, data] : [data];
             });
         },

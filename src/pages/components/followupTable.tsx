@@ -1,65 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Opportunity } from '../../../types/opportunities.type';
-import '../../../styles/opportunityTable.css';
-import { useAllOpportunities, useDeleteOpportunity } from '../../../hooks/useOpportunities';
+import { FollowUp } from '../../types/followup.type';
+import { useAllFollowUps, useDeleteFollowUp } from '../../hooks/useFollowup';
 import DataTable from 'react-data-table-component';
-import columnsConfig from '../../components/columnConfig';
-import ActionButtons from '../../components/actionButtons';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
+import columnsConfig from './columnConfig';
+import ActionButtons from './actionButtons';
+import DeleteConfirmationModal from '../moduleOpportunity/components/DeleteConfirmationModal';
 
-const OpportunityTable: React.FC = () => {
-    const { isLoading, isSuccess, isError, data: opportunitiesData } = useAllOpportunities();
-    const deleteOpportunity = useDeleteOpportunity();
+interface FollowUpTableProps {
+    idOpportunity?: number;
+}
+
+const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
+    const { isLoading, isSuccess, isError, data: followUpData } = useAllFollowUps();
+    const deleteFollowUp = useDeleteFollowUp();
     const navigate = useNavigate();
 
-    const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-    const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
+    const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+    const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        if (isSuccess && opportunitiesData) {
-            setOpportunities(opportunitiesData);
+        if (isSuccess && followUpData) {
+            let data = followUpData;
+            if (idOpportunity != null) {
+                data = followUpData.filter((followUp: FollowUp) => followUp.opportunityId === idOpportunity);
+            }
+            setFollowUps(data);
         }
-    }, [isSuccess, opportunitiesData]);
+    }, [isSuccess, followUpData, idOpportunity]);
 
-    const handleDeleteClick = (opportunityId: string) => {
-        setSelectedOpportunityId(opportunityId);
-        setIsModalOpen(true);
+    const handleDeleteClick = (followUp: FollowUp) => {
+        setSelectedFollowUp(followUp); 
+        setIsModalOpen(true); 
     };
 
     const confirmDelete = () => {
-        if (selectedOpportunityId) {
-            deleteOpportunity.mutate(selectedOpportunityId, {
+        if (selectedFollowUp) {
+            deleteFollowUp.mutate(selectedFollowUp.id, {
                 onSuccess: () => {
-                    setOpportunities(prevOpportunities =>
-                        prevOpportunities.filter(opportunity => opportunity.Id !== selectedOpportunityId)
+                    
+                    setFollowUps((prevFollowUps) =>
+                        prevFollowUps.filter((f) => f.id !== selectedFollowUp.id)
                     );
-                    setIsModalOpen(false);
-                    setSelectedOpportunityId(null);
+                    setSelectedFollowUp(null);
+                    setIsModalOpen(false); 
                 },
             });
         }
     };
 
     const cancelDelete = () => {
-        setIsModalOpen(false);
-        setSelectedOpportunityId(null);
-    };
-
-    const handleNameClick = (opportunityId: number) => {
-        navigate(`/opportunity/${opportunityId}`); // Use ID for redirection
+        setSelectedFollowUp(null); 
+        setIsModalOpen(false); 
     };
 
     const actionButtons = [
         {
             label: 'Actualizar',
-            onClick: (opportunity: Opportunity) => navigate(`/opportunity/update/${opportunity.Id}`),
+            onClick: (followUp: FollowUp) => navigate(`/actualizar-seguimiento/${followUp.id}`),
             className: 'action-btn update-opp-btn',
         },
         {
             label: 'Eliminar',
-            onClick: (opportunity: Opportunity) => handleDeleteClick(opportunity.Id),
+            onClick: handleDeleteClick,
             className: 'action-btn delete-btn',
         },
     ];
@@ -67,37 +71,36 @@ const OpportunityTable: React.FC = () => {
     const baseColumns = [
         {
             name: 'ID',
-            selector: (row: Opportunity) => row.Id,
+            selector: (row: FollowUp) => row.id,
             sortable: true,
         },
         {
-            name: 'Nombre',
-            selector: (row: Opportunity) => row.businessName,
+            name: 'ID Oportunidad Asociada',
+            selector: (row: FollowUp) => row.opportunityId,
             sortable: true,
-            cell: (row: Opportunity) => (
+            cell: (row: FollowUp) => (
                 <span
-                    onClick={() => handleNameClick(Number(row.Id))}
+                    onClick={() => navigate(`/activities/${row.id}`)}
                     style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
                 >
-                    {row.businessName}
+                    {row.opportunityId}
                 </span>
             ),
         },
         {
-            name: 'Linea de negocio',
-            selector: (row: Opportunity) => row.businessLine,
+            name: 'Tipo de contacto',
+            selector: (row: FollowUp) => row.contactType,
             sortable: true,
         },
         {
-            name: 'Estado',
-            selector: (row: Opportunity) => row.status,
+            name: 'Ejecutivo Comercial',
+            selector: (row: FollowUp) => row.commercialExecutive,
             sortable: true,
         },
         {
-            name: 'Fecha de realización',
-            selector: (row: Opportunity) => row.estimatedDate,
+            name: 'Descripción',
+            selector: (row: FollowUp) => row.description,
             sortable: true,
-            cell: (row: Opportunity) => new Date(row.estimatedDate).toLocaleDateString(),
         },
     ];
 
@@ -106,7 +109,7 @@ const OpportunityTable: React.FC = () => {
             name: 'Acciones',
             selector: undefined,
             sortable: false,
-            cell: (row: Opportunity) => (
+            cell: (row: FollowUp) => (
                 <ActionButtons item={row} navigate={navigate} actions={actionButtons} />
             ),
         },
@@ -119,9 +122,9 @@ const OpportunityTable: React.FC = () => {
             {!isLoading && !isError && isSuccess && (
                 <DataTable
                     columns={columnsConfig({ baseColumns, customColumns })}
-                    data={opportunities}
+                    data={followUps}
                     pagination
-                    className="opportunity-table"
+                    className="followup-table"
                     customStyles={{
                         headCells: {
                             style: {
@@ -142,6 +145,7 @@ const OpportunityTable: React.FC = () => {
                 />
             )}
 
+            {/* Confirmation Modal */}
             <DeleteConfirmationModal
                 isOpen={isModalOpen}
                 onConfirm={confirmDelete}
@@ -151,4 +155,4 @@ const OpportunityTable: React.FC = () => {
     );
 };
 
-export default OpportunityTable;
+export default FollowUpTable;
