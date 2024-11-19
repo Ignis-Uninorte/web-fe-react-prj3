@@ -3,6 +3,8 @@ export type FollowUp = {
     opportunityId: number;
     contactType: string;
     contactDate: string;
+    clientContact: string;
     commercialExecutive: string;
     description: string;
 };
+
