@@ -4,7 +4,7 @@ import { useAllOpportunities } from '../hooks/useOpportunities'; // Import hooks
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import MainLayout from '../layouts/MainLayout';
-import '../../../styles/Dashboard.css';
+import '../styles/Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { data: clients, isSuccess: clientsSuccess } = useAllClients();
@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       );
   
       const totalExecuted = clientOpportunities
-        .filter((opp: { status: string }) => opp.status === "Cerrado")
+        .filter((opp: { status: string }) => opp.status === "Finalizada")
         .reduce((sum: number, opp: { estimatedValue: string }) => sum + parseFloat(opp.estimatedValue || "0"), 0);
   
       return { client: client.name, totalEstimated, totalExecuted };
