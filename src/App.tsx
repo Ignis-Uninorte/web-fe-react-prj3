@@ -13,7 +13,6 @@ import OpportunityDetail from './pages/moduleOpportunity/components/OpportunityD
 const queryClient = new QueryClient();
 
 function App() {
-  // Define the onClose function
   const handleClose = () => {
     console.log("Create Activity form closed");
   };
@@ -31,10 +30,9 @@ function App() {
           <Route path="/crear-oportunidad" element={<CreateOpportunity />} /> {/* Ruta para crear nueva oportunidad */}
           <Route path="/opportunity/update/:opportunityId" element={<CreateOpportunity />} /> {/* Ruta para editar oportunidad */}
 
-          {/* Pass the onClose prop to CreateActivity */}
-          <Route path="/actividades" element={<ModuleActivity />} />
+          <Route path="/seguimiento" element={<ModuleActivity />} />
           <Route
-            path="/crear-actividad"
+            path="/crear-seguimiento"
             element={<CreateActivity onClose={handleClose} />} // Ruta para crear nueva actividad sin opportunityId
           />
 

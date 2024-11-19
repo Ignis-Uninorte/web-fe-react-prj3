@@ -22,15 +22,12 @@ const OpportunityDetail: React.FC = () => {
     return (
         <MainLayout>
             <div className="opportunity-detail-container">
-                {/* Back Button */}
                 <div className="back-arrow">
                     <button onClick={() => window.history.back()} className="back-btn">
                         <img src={back} alt="Back" />
                     </button>
                 </div>
                 <h2 className="opportunity-detail-title">Detalles de la Oportunidad</h2>
-
-                {/* Opportunity Details */}
                 <div className="opportunity-info-grid">
                     <div><strong>Nombre del Negocio</strong><p>{opportunityData.businessName}</p></div>
                     <div><strong>Línea de Negocio</strong><p>{opportunityData.businessLine}</p></div>
