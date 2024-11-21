@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAllClients } from '../hooks/useClients';
-import { useAllOpportunities } from '../hooks/useOpportunities'; // Import hooks
+import { useAllOpportunities } from '../hooks/useOpportunities'; 
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import MainLayout from '../layouts/MainLayout';
@@ -10,7 +10,7 @@ const Dashboard: React.FC = () => {
   const { data: clients, isSuccess: clientsSuccess } = useAllClients();
   const { data: opportunities, isSuccess: opportunitiesSuccess } = useAllOpportunities();
 
-  // Prepare data for charts
+  // Data Chart 1
   const barChartData = useMemo(() => {
     if (!clientsSuccess || !opportunitiesSuccess) return [];
   
@@ -33,6 +33,8 @@ const Dashboard: React.FC = () => {
     });
   }, [clients, opportunities, clientsSuccess, opportunitiesSuccess]);
 
+
+  // Data Chart 2
   const pieChart1Data = useMemo(() => {
     if (!opportunitiesSuccess) return [];
   
@@ -47,6 +49,7 @@ const Dashboard: React.FC = () => {
     }));
   }, [opportunities, opportunitiesSuccess]);
   
+  // Data Chart 3
   const pieChart2Data = useMemo(() => {
     if (!opportunitiesSuccess) return [];
   
@@ -70,19 +73,19 @@ const Dashboard: React.FC = () => {
   
   const barChartOptions = {
     chart: { type: 'column' },
-    title: { text: 'Clients: Total Estimated vs Executed Values' },
+    title: { text: 'Clientes: Total Estimado vs Valor Total Ejecutados' },
     xAxis: {
       categories: barChartData.map((data: BarChartData) => data.client),
-      title: { text: 'Clients' },
+      title: { text: 'Clientes' },
     },
     yAxis: { title: { text: 'Value (COP)' } },
     series: [
       {
-        name: 'Total Estimated',
+        name: 'Total Estimado',
         data: barChartData.map((data: BarChartData) => data.totalEstimated),
       },
       {
-        name: 'Total Executed',
+        name: 'Total Ejecutado',
         data: barChartData.map((data: BarChartData) => data.totalExecuted),
       },
     ],
@@ -90,14 +93,42 @@ const Dashboard: React.FC = () => {
 
   const pieChart1Options = {
     chart: { type: 'pie' },
-    title: { text: 'Opportunities by Status' },
-    series: [{ name: 'Opportunities', data: pieChart1Data }],
+    title: { text: 'Oportunidades por Status' },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}: {point.y}',
+        },
+      },
+    },
+    series: [{ name: 'Oportunidades', data: pieChart1Data }],
   };
 
   const pieChart2Options = {
     chart: { type: 'pie' },
-    title: { text: 'Opportunities by Business Line' },
-    series: [{ name: 'Opportunities', data: pieChart2Data }],
+    title: { text: 'Oportunidades por línea de negocio' },
+    tooltip: {
+      pointFormat: '<b>{point.percentage:.1f}%</b>',
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}: {point.percentage:.1f}%',
+        },
+      },
+    },
+    series: [
+      {
+        name: 'Oportunidades',
+        data: pieChart2Data,
+      },
+    ],
   };
 
   return (
