@@ -1,16 +1,18 @@
+
 import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAllOpportunities } from '../../../hooks/useOpportunities'; // Usamos el hook de oportunidades
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAllOpportunities } from '../../../hooks/useOpportunities';
 import { useSubmitActivity } from '../../../hooks/useSubmitActivity';
+import { useUpdateActivity } from '../../../hooks/useUpdateActivity';
 import '../../../styles/CreateActivity.css';
-import { useFetchActivities } from '../../../hooks/useFetchActivities'; // Importamos la interfaz desde el hook
+import { useFetchActivities } from '../../../hooks/useFetchActivities';
 import MainLayout from '../../../layouts/MainLayout';
 import back from '../../../assets/back-arrow.svg';
 
-
 export interface ActivityFormInputs {
     id?: number;
-    opportunityId: number; // Añadimos el campo opportunityId
+    opportunityId: number;
     contactType: string;
     contactDate: string;
     clientContact: string;
@@ -19,50 +21,50 @@ export interface ActivityFormInputs {
 }
 
 interface Opportunity {
-    Id: string;  // El Id de la oportunidad, ajusta el tipo si es necesario
+    Id: string;
     businessName: string;
 }
 
-interface CreateActivityProps {
-    onClose: () => void;
-}
+const CreateActivity: React.FC = () => {
+    const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<ActivityFormInputs>();
+    const { activityId } = useParams<{ activityId: string }>();
+    const navigate = useNavigate();
 
-const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ActivityFormInputs>();
-    const [newId, setNewId] = useState<number | null>(null);
-    const { data: activities, isLoading: activitiesLoading, isError: activitiesError } = useFetchActivities(); // Usamos el hook actualizado
-    const { data: opportunities, isLoading: opportunitiesLoading, isError: opportunitiesError } = useAllOpportunities(); // Usamos el hook de oportunidades
-    const { mutateAsync: submitActivity, isError: isSubmitError, isSuccess } = useSubmitActivity();
+    const { data: activities } = useFetchActivities();
+    const { data: opportunities, isLoading: opportunitiesLoading } = useAllOpportunities();
+    const { mutateAsync: submitActivity, isError: isSubmitError, isSuccess: isSubmitSuccess } = useSubmitActivity();
+    const { mutateAsync: updateActivity, isError: isUpdateError, isSuccess: isUpdateSuccess } = useUpdateActivity();
 
-    // Calcular el ID más alto entre las actividades existentes
+    const [isEditing, setIsEditing] = useState(false);
+
+    // Cargar los datos de la actividad en modo edición
     useEffect(() => {
-        if (activities && activities.length > 0) {
-            const highestId = activities.reduce((max, activity) => Math.max(max, activity.id), 0);
-            setNewId(highestId + 1);
-        } else {
-            setNewId(1); // Si no hay actividades, iniciamos en 1
+        if (activityId && activities) {
+            const activityToEdit = activities.find(activity => activity.id === parseInt(activityId, 10));
+            if (activityToEdit) {
+                setIsEditing(true);
+                Object.entries(activityToEdit).forEach(([key, value]) => {
+                    setValue(key as keyof ActivityFormInputs, value);
+                });
+            }
         }
-    }, [activities]);
+    }, [activityId, activities, setValue]);
 
     const onSubmit: SubmitHandler<ActivityFormInputs> = async (data) => {
-        if (newId === null) {
-            console.error('Failed to generate unique ID');
-            return;
-        }
-
-        const activityWithNewId = { ...data, id: newId };
-
         try {
-            await submitActivity(activityWithNewId);
-            reset(); // Limpiar el formulario después del envío
-            onClose(); // Cerrar el modal
+            if (isEditing) {
+                await updateActivity({ id: parseInt(activityId!, 10), ...data });
+            } else {
+                await submitActivity(data);
+            }
+            reset();
+            setTimeout(() => navigate('/seguimiento'), 2000); // Redirige después de 2 segundos
         } catch (error) {
-            console.error('Error creating activity:', error);
+            console.error('Error saving activity:', error);
         }
     };
 
-    if (activitiesLoading || opportunitiesLoading) return <p>Loading...</p>;
-    if (activitiesError || opportunitiesError) return <p>Failed to load data.</p>;
+    if (opportunitiesLoading) return <p>Cargando oportunidades...</p>;
 
     return (
         <MainLayout>
@@ -74,14 +76,18 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
                         </button>
                     </div>
                 </div>
-                <h2>Create Follow-up Activity</h2>
-                {isSuccess && <div className="success-message">Activity successfully created!</div>}
-                {isSubmitError && <div className="error-message">Error creating activity. Please try again.</div>}
+                <h2>{isEditing ? 'Actualizar Actividad de Seguimiento' : 'Crear Actividad de Seguimiento'}</h2>
+                {(isSubmitError || isUpdateError) && (
+                    <div className="error-message">Error guardando la actividad. Intenta de nuevo.</div>
+                )}
+                {(isSubmitSuccess || isUpdateSuccess) && (
+                    <div className="success-message">¡Actividad guardada con éxito! Redirigiendo en 2 segundos...</div>
+                )}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
-                        <label>Opportunity:</label>
-                        <select {...register('opportunityId', { required: 'Opportunity is required' })}>
-                            <option value="">Select Opportunity</option>
+                        <label>Oportunidad:</label>
+                        <select {...register('opportunityId', { required: 'Oportunidad es requerida' })} disabled={isEditing}>
+                            <option value="">Selecciona una oportunidad</option>
                             {opportunities?.map((opportunity: Opportunity) => (
                                 <option key={opportunity.Id} value={opportunity.Id}>
                                     {opportunity.businessName}
@@ -92,61 +98,50 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
                     </div>
 
                     <div className="form-group">
-                        <label>Contact Type:</label>
-                        <select {...register('contactType', { required: 'Contact type is required' })}>
-                            <option value="">Select</option>
-                            <option value="Call">Call</option>
-                            <option value="Email">Email</option>
-                            <option value="In-person Meeting">In-person Meeting</option>
+                        <label>Tipo de Contacto:</label>
+                        <select {...register('contactType', { required: 'Tipo de contacto es requerido' })}>
+                            <option value="">Seleccionar</option>
+                            <option value="Call">Llamada</option>
+                            <option value="Email">Correo</option>
+                            <option value="In-person Meeting">Reunión</option>
                         </select>
                         {errors.contactType && <span className="error">{errors.contactType.message}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label>Contact Date:</label>
-                        <input type="date" {...register('contactDate', { required: 'Contact date is required' })} />
+                        <label>Fecha de Contacto:</label>
+                        <input type="date" {...register('contactDate', { required: 'Fecha de contacto es requerida' })} />
                         {errors.contactDate && <span className="error">{errors.contactDate.message}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label>Client Contact:</label>
-                        <select {...register('clientContact', { required: 'Client contact is required' })}>
-                            <option value="">Select Contact</option>
-                            {activities?.map((activity) => (
-                                <option key={activity.id} value={activity.clientContact}>
-                                    {activity.clientContact}
-                                </option>
-                            ))}
-                        </select>
+                        <label>Contacto del Cliente:</label>
+                        <input type="text" {...register('clientContact', { required: 'Contacto del cliente es requerido' })} />
                         {errors.clientContact && <span className="error">{errors.clientContact.message}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label>Commercial Executive:</label>
-                        <input
-                            type="text"
-                            {...register('commercialExecutive', { required: 'Commercial Executive is required' })}
-                        />
+                        <label>Ejecutivo Comercial:</label>
+                        <input type="text" {...register('commercialExecutive', { required: 'Ejecutivo comercial es requerido' })} />
                         {errors.commercialExecutive && <span className="error">{errors.commercialExecutive.message}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label>Description:</label>
-                        <textarea {...register('description', { required: 'Description is required' })} />
+                        <label>Descripción:</label>
+                        <textarea {...register('description', { required: 'Descripción es requerida' })} />
                         {errors.description && <span className="error">{errors.description.message}</span>}
                     </div>
 
                     <div className="form-buttons">
-                        <button onClick={() => window.history.back()} type="button" className="cancel-btn">
-                            Cancel
+                        <button type="button" className="cancel-btn" onClick={() => navigate('/seguimiento')}>
+                            Cancelar
                         </button>
                         <button type="submit" className="submit-btn">
-                            Save
+                            {isEditing ? 'Actualizar' : 'Guardar'}
                         </button>
                     </div>
                 </form>
             </div>
-
         </MainLayout>
     );
 };
