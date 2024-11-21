@@ -58,7 +58,7 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
     const actionButtons = [
         {
             label: 'Actualizar',
-            onClick: (followUp: FollowUp) => navigate(`/activities/update/${followUp.id}`),
+            onClick: (followUp: FollowUp) => navigate(`/actualizar-seguimiento/${followUp.id}`),
             className: 'action-btn update-opp-btn',
         },
         {
