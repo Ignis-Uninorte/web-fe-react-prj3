@@ -18,7 +18,7 @@ export function useDeleteOpportunity() {
     return useMutation({
         mutationFn: (id: string) => deleteOpportunityById(id),
         onSuccess: () => {
-            queryClient.invalidateQueries(['opportunities']);
+            queryClient.invalidateQueries({ queryKey: ['opportunities'] });
         },
     });
 }
@@ -56,7 +56,7 @@ export function useCreateOpportunity() {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(['opportunities']);
+            queryClient.invalidateQueries({ queryKey: ['opportunities'] });
         },
     });
 }
@@ -70,7 +70,7 @@ export function useUpdateOpportunity() {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(['opportunities']);
+            queryClient.invalidateQueries({ queryKey: ['opportunities'] });
         },
     });
 }
