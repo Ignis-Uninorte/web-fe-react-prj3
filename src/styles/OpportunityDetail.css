@@ -46,23 +46,40 @@ button.back-btn {
     text-align: center;
 }
 
-/* Status Styling */
-.opportunity-status p {
-    margin: 0;
+.status-apertura {
+    color: green;
     font-weight: bold;
 }
 
-.status-open {
-    color: green;
+.status-cerrada {
+    color: red;
+    font-weight: bold;
 }
 
-.status-closed {
-    color: red;
+.status-en-progreso {
+    color: orange;
+    font-weight: bold;
 }
 
-/* Error Message */
-.error-message {
-    color: red;
-    font-size: 1rem;
+.related-client-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.related-client-container h3 {
+    margin-top: 0px;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+
+.related-client-info div {
+    padding: 10px;
+    border-radius: 8px;
     text-align: center;
+    font-size: larger;
+    font-weight: bold;
 }
