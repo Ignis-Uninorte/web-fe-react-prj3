@@ -41,7 +41,7 @@ const OpportunityForm: React.FC = () => {
     const onSubmit: SubmitHandler<OpportunityFormInputs> = (data) => {
         if (isEditMode && opportunityId) {
             updateOpportunity.mutate(
-                { opportunityId, updatedOpportunity: data },
+                { opportunityId, updatedOpportunity: { ...data, Id: data.Id ?? opportunityId } },
                 {
                     onSuccess: () => {
                         setMessage('¡Oportunidad actualizada con éxito!');
@@ -87,7 +87,7 @@ const OpportunityForm: React.FC = () => {
                         <label>Cliente:</label>
                         <select {...register('clientId', { required: 'El cliente es obligatorio' })}>
                             <option value="">Seleccione un cliente</option>
-                            {clients?.map(client => (
+                            {clients?.map((client: { id: number; name: string }) => (
                                 <option key={client.id} value={client.id.toString()}>
                                     {client.name}
                                 </option>
