@@ -9,6 +9,7 @@ import CreateOpportunity from './pages/moduleOpportunity/components/CreateOpport
 import CreateActivity from './pages/moduleActivity/components/CreateActivity'; // Import your new component
 import ModuleActivity from './pages/moduleActivity/main';
 import OpportunityDetail from './pages/moduleOpportunity/components/OpportunityDetail';
+import Dashboard from './pages/Dashboard';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function App() {
             path="/actualizar-seguimiento/:activityId"
             element={<CreateActivity  />} // Ruta para actualizar actividad con activityId
           />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>
     </QueryClientProvider>
