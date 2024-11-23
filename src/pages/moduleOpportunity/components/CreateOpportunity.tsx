@@ -12,7 +12,7 @@ interface OpportunityFormInputs {
     businessName: string;
     businessLine: string;
     description: string;
-    estimatedValue: string; // que sea str
+    estimatedValue: string;
     estimatedDate: string;
     status: string;
 }
@@ -93,7 +93,10 @@ const OpportunityForm: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
                         <label>Cliente:</label>
-                        <select {...register('clientId', { required: 'El cliente es obligatorio' })}>
+                        <select
+                            {...register('clientId', { required: 'El cliente es obligatorio' })}
+                            disabled={isEditMode} // Deshabilitar si estamos editando
+                        >
                             <option value="">Seleccione un cliente</option>
                             {clients?.map((client: { id: number; name: string }) => (
                                 <option key={client.id} value={client.id.toString()}>
@@ -138,6 +141,18 @@ const OpportunityForm: React.FC = () => {
                         <label>Fecha Estimada:</label>
                         <input type="date" {...register('estimatedDate', { required: 'Fecha estimada es obligatoria' })} />
                         {errors.estimatedDate && <span className="error">{errors.estimatedDate.message}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Estado:</label>
+                        <select {...register('status', { required: 'El estado es obligatorio' })}>
+                            <option value="">Seleccione el estado</option>
+                            <option value="Apertura">Apertura</option>
+                            <option value="En Estudio">En Estudio</option>
+                            <option value="Orden de Compra">Orden de Compra</option>
+                            <option value="Finalizada">Finalizada</option>
+                        </select>
+                        {errors.status && <span className="error">{errors.status.message}</span>}
                     </div>
 
                     <button type="submit" className="submit-btn">
