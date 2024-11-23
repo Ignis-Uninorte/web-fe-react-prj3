@@ -12,7 +12,7 @@ interface OpportunityFormInputs {
     businessName: string;
     businessLine: string;
     description: string;
-    estimatedValue: number;
+    estimatedValue: string; // que sea str
     estimatedDate: string;
     status: string;
 }
@@ -34,14 +34,22 @@ const OpportunityForm: React.FC = () => {
     // Preload form data if editing
     useEffect(() => {
         if (opportunity) {
-            reset(opportunity);
+            reset({
+                ...opportunity,
+                estimatedValue: opportunity.estimatedValue.toString(), // convertir a string siempre
+            });
         }
     }, [opportunity, reset]);
 
     const onSubmit: SubmitHandler<OpportunityFormInputs> = (data) => {
+        const formattedData = {
+            ...data,
+            Id: data.Id ?? opportunityId ?? '', //  Id nunca sea undefined, siempre será una cadena
+        };
+
         if (isEditMode && opportunityId) {
             updateOpportunity.mutate(
-                { opportunityId, updatedOpportunity: { ...data, Id: data.Id ?? opportunityId } },
+                { opportunityId, updatedOpportunity: formattedData },
                 {
                     onSuccess: () => {
                         setMessage('¡Oportunidad actualizada con éxito!');
@@ -54,7 +62,7 @@ const OpportunityForm: React.FC = () => {
             );
         } else {
             createOpportunity.mutate(
-                { ...data, status: 'Apertura' },
+                { ...formattedData, status: 'Apertura' },
                 {
                     onSuccess: () => {
                         setMessage('¡Oportunidad creada con éxito! Redirigiendo en 2seg');
