@@ -1,12 +1,11 @@
-// src/pages/moduleClients/components/ClientDetail.tsx
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import { useAllClients } from '../../../hooks/useClients';
-import { Client, Contact } from '../../../types/clientes.type';
-import { Opportunity } from '../../../types/opportunities.type'; // Import Opportunity type
 import { useAllOpportunities } from '../../../hooks/useOpportunities';
-import { useNavigate } from 'react-router-dom';
+import { Client, Contact } from '../../../types/clientes.type';
+import { Opportunity } from '../../../types/opportunities.type';
+import FollowUpTable from '../../components/followupTable';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/ClientDetail.css';
 
@@ -16,6 +15,8 @@ const ClientDetail: React.FC = () => {
     const decodedClientId = clientId ? decodeURIComponent(clientId) : '';
     const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useAllClients();
     const { data: opportunitiesData, isLoading: opportunitiesLoading, error: opportunitiesError } = useAllOpportunities();
+
+    const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
 
     const clientData = useMemo(() => {
         if (!clientsData || !decodedClientId) return undefined;
@@ -34,6 +35,9 @@ const ClientDetail: React.FC = () => {
         navigate(`/opportunity/${opportunityId}`); // Use ID for redirection
     };
 
+    const handleSeguimientoClick = (opportunityId: number) => {
+        setSelectedOpportunityId(opportunityId);
+    };
 
     if (clientsLoading || opportunitiesLoading) return <p>Loading...</p>;
     if (clientsError) return <p className="error-message">Error: {clientsError.message}</p>;
@@ -95,7 +99,7 @@ const ClientDetail: React.FC = () => {
                     <table className="opportunities-table">
                         <thead>
                             <tr>
-                                <th>Nombre de Oportunidad   </th>
+                                <th>Nombre de Oportunidad</th>
                                 <th>Línea de Negocio</th>
                                 <th>Descripción</th>
                                 <th>Valor Estimado</th>
@@ -120,13 +124,28 @@ const ClientDetail: React.FC = () => {
                                     <td>{opp.estimatedValue}</td>
                                     <td>{opp.estimatedDate}</td>
                                     <td>{opp.status}</td>
-                                    <td><button>Seguimiento</button></td>
+                                    <td>
+                                        <button
+                                            className="seguimiento-btn"
+                                            onClick={() => handleSeguimientoClick(Number(opp.Id))}
+                                        >
+                                            Seguimiento
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 ) : (
                     <p>No hay oportunidades asociadas.</p>
+                )}
+
+                {/* Follow-Up Table */}
+                {selectedOpportunityId && (
+                    <div className="followup-table-container">
+                        <h3>Seguimientos para Oportunidad {selectedOpportunityId}</h3>
+                        <FollowUpTable idOpportunity={selectedOpportunityId} />
+                    </div>
                 )}
             </div>
         </MainLayout>
