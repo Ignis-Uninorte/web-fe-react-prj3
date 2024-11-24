@@ -1,12 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAllOpportunities } from '../../../hooks/useOpportunities';
+import { useFetchActivities } from '../../../hooks/useFetchActivities';
 import { useSubmitActivity } from '../../../hooks/useSubmitActivity';
 import { useUpdateActivity } from '../../../hooks/useUpdateActivity';
 import '../../../styles/CreateActivity.css';
-import { useFetchActivities } from '../../../hooks/useFetchActivities';
 import MainLayout from '../../../layouts/MainLayout';
 import back from '../../../assets/back-arrow.svg';
 
@@ -20,52 +18,37 @@ export interface ActivityFormInputs {
     description: string;
 }
 
-interface Opportunity {
-    Id: string;
-    businessName: string;
-}
-
 const CreateActivity: React.FC = () => {
+    const { opportunityId } = useParams<{ opportunityId: string }>();
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<ActivityFormInputs>();
-    const { activityId } = useParams<{ activityId: string }>();
     const navigate = useNavigate();
 
     const { data: activities } = useFetchActivities();
-    const { data: opportunities, isLoading: opportunitiesLoading } = useAllOpportunities();
     const { mutateAsync: submitActivity, isError: isSubmitError, isSuccess: isSubmitSuccess } = useSubmitActivity();
     const { mutateAsync: updateActivity, isError: isUpdateError, isSuccess: isUpdateSuccess } = useUpdateActivity();
 
     const [isEditing, setIsEditing] = useState(false);
 
-    // Cargar los datos de la actividad en modo edición
     useEffect(() => {
-        if (activityId && activities) {
-            const activityToEdit = activities.find(activity => activity.id === parseInt(activityId, 10));
-            if (activityToEdit) {
-                setIsEditing(true);
-                Object.entries(activityToEdit).forEach(([key, value]) => {
-                    setValue(key as keyof ActivityFormInputs, value);
-                });
-            }
+        if (opportunityId) {
+            setValue('opportunityId', parseInt(opportunityId, 10));
         }
-    }, [activityId, activities, setValue]);
+    }, [opportunityId, setValue]);
 
     const onSubmit: SubmitHandler<ActivityFormInputs> = async (data) => {
         try {
-            if (isEditing) {
-                await updateActivity({ id: parseInt(activityId!, 10), ...data });
+            if (isEditing && data.id !== undefined) {
+                await updateActivity(data as Required<ActivityFormInputs>);
             } else {
                 await submitActivity(data);
             }
             reset();
-            setTimeout(() => navigate('/seguimiento'), 2000); // Redirige después de 2 segundos
+            setTimeout(() => navigate(`/opportunity/${opportunityId}`), 2000);
         } catch (error) {
             console.error('Error saving activity:', error);
         }
     };
-
-    if (opportunitiesLoading) return <p>Cargando oportunidades...</p>;
-
+    
     return (
         <MainLayout>
             <div className="create-activity-form container">
@@ -84,18 +67,7 @@ const CreateActivity: React.FC = () => {
                     <div className="success-message">¡Actividad guardada con éxito! Redirigiendo en 2 segundos...</div>
                 )}
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="form-group">
-                        <label>Oportunidad:</label>
-                        <select {...register('opportunityId', { required: 'Oportunidad es requerida' })} disabled={isEditing}>
-                            <option value="">Selecciona una oportunidad</option>
-                            {opportunities?.map((opportunity: Opportunity) => (
-                                <option key={opportunity.Id} value={opportunity.Id}>
-                                    {opportunity.businessName}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.opportunityId && <span className="error">{errors.opportunityId.message}</span>}
-                    </div>
+                    <input type="hidden" {...register('opportunityId', { required: true })} />
 
                     <div className="form-group">
                         <label>Tipo de Contacto:</label>
@@ -133,7 +105,7 @@ const CreateActivity: React.FC = () => {
                     </div>
 
                     <div className="form-buttons">
-                        <button type="button" className="cancel-btn" onClick={() => navigate('/seguimiento')}>
+                        <button onClick={() => window.history.back()} type="button" className="cancel-btn">
                             Cancelar
                         </button>
                         <button type="submit" className="submit-btn">

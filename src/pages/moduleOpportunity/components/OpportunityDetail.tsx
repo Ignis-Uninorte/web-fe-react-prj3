@@ -37,8 +37,11 @@ const OpportunityDetail: React.FC = () => {
         <MainLayout>
             <div className="body_moduleActivity">
                 <h1>Seguimiento</h1>
-                <button onClick={() => navigate('/crear-seguimiento')} className="btn_crearactividad"> <b>Crear Seguimiento</b></button>
-            </div>
+                <button
+                    onClick={() => navigate(`/crear-seguimiento/${opportunityId}`)}
+                    className="btn_crearactividad">
+                    <b>Crear Seguimiento</b>
+                </button>   </div>
             <div className="opportunity-detail-container">
                 <div className="back-arrow">
                     <button onClick={() => window.history.back()} className="back-btn">
