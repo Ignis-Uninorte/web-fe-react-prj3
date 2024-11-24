@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import { useAllOpportunities } from '../../../hooks/useOpportunities';
 import { useAllClients } from '../../../hooks/useClients';
@@ -9,20 +9,25 @@ import back from '../../../assets/back-arrow.svg';
 import '../../../styles/OpportunityDetail.css';
 import FollowUpTable from '../../components/followupTable';
 import '../../../styles/main-moduleActivity.css';
+import Modal from '../../moduleActivity/components/modal'; // Importa el modal
+import CreateActivity from '../../moduleActivity/components/CreateActivity';
 
 const OpportunityDetail: React.FC = () => {
-    const navigate = useNavigate();
     const { opportunityId } = useParams<{ opportunityId: string }>();
     const { data: opportunitiesData, isLoading: oppLoading, error: oppError } = useAllOpportunities();
     const { data: clientsData, isLoading: clientLoading, error: clientError } = useAllClients();
 
-    // Get the current opportunity
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
+
+    // Obtener la oportunidad actual
     const opportunityData = useMemo(() => {
         if (!opportunitiesData || !opportunityId) return undefined;
         return opportunitiesData.find((opp: Opportunity) => opp.Id === opportunityId);
     }, [opportunitiesData, opportunityId]);
 
-    // Get the related client using the clientId from the opportunity
+    // Obtener el cliente relacionado usando clientId de la oportunidad
     const relatedClient = useMemo(() => {
         if (!clientsData || !opportunityData) return undefined;
         return clientsData.find((client: Client) => client.id === Number(opportunityData.clientId));
@@ -63,14 +68,20 @@ const OpportunityDetail: React.FC = () => {
                         </p>
                     </div>
                 </div>
-                
                 <div className="body_moduleActivity">
                     <h1>Seguimiento</h1>
                     <button
-                        onClick={() => navigate(`/crear-seguimiento/${opportunityId}`)}
+                        onClick={handleOpenModal} // Abre el modal
                         className="btn_crearactividad">
                         <b>Crear Seguimiento</b>
-                    </button>   </div>
+                    </button>
+                </div>
+                {/* Modal */}
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                    {/* Pasar onClose a CreateActivity */}
+                    <CreateActivity onClose={handleCloseModal} />
+                </Modal>
+
                 <div>
                     <strong>Tabla Seguimiento</strong>
                     <FollowUpTable idOpportunity={Number(opportunityId)} />
