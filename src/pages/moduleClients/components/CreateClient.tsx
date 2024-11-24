@@ -55,12 +55,32 @@ const CreateClient: React.FC = () => {
   }, [clientData, clientError, nextIdError, reset]);
 
   const onSubmit: SubmitHandler<ClientFormInputs> = async (data) => {
+    // Arrange data in the correct order
     const clientData = isEditing
-      ? data
+      ? {
+        id: parseInt(nit || '0'), // Use the existing ID for editing
+        nit: data.nit,
+        name: data.name,
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        phone: data.phone,
+        corporateEmail: data.corporateEmail,
+        active: data.active,
+        contacts: data.contacts || [], // Ensure contacts is an array, even if empty
+      }
       : {
-          ...data,
-          id: nextId, // Asigna el próximo ID solo si se está creando un cliente
-        };
+        id: nextId, // Use the next available ID for creating
+        nit: data.nit,
+        name: data.name,
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        phone: data.phone,
+        corporateEmail: data.corporateEmail,
+        active: data.active,
+        contacts: data.contacts || [], // Ensure contacts is an array, even if empty
+      };
 
     try {
       const response = await fetch(
@@ -68,12 +88,12 @@ const CreateClient: React.FC = () => {
         {
           method: isEditing ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(clientData),
+          body: JSON.stringify(clientData), // Send properly ordered data
         }
       );
 
       if (response.ok) {
-        setMessage(isEditing ? '¡Cliente actualizado con éxito! Redirigiendo en 2 segundos.' : '¡Cliente creado con éxito!');
+        setMessage(isEditing ? '¡Cliente actualizado con éxito!, Redirigiendo en 2seg' : '¡Cliente creado con éxito!');
         if (!isEditing) reset();
         setTimeout(() => navigate('/'), 2000);
       } else {
@@ -84,6 +104,7 @@ const CreateClient: React.FC = () => {
       setMessage('Error al conectarse con el servidor.');
     }
   };
+
 
   return (
     <MainLayout>
@@ -104,7 +125,7 @@ const CreateClient: React.FC = () => {
             <input
               type="text"
               {...register('nit', { required: 'El NIT es obligatorio', pattern: { value: /^\d+$/, message: 'Solo números' } })}
-              disabled={isEditing} 
+              disabled={isEditing} // Disable NIT field if editing
             />
             {errors.nit && <span className="error">{errors.nit.message}</span>}
           </div>
@@ -113,6 +134,33 @@ const CreateClient: React.FC = () => {
             <label>Nombre:</label>
             <input type="text" {...register('name', { required: 'El nombre es obligatorio' })} />
             {errors.name && <span className="error">{errors.name.message}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Dirección:</label>
+            <input
+              type="text"
+              {...register('address', { required: 'La dirección es obligatoria' })}
+            />
+            {errors.address && <span className="error">{errors.address.message}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>País:</label>
+            <input
+              type="text"
+              {...register('country', { required: 'El país es obligatorio' })}
+            />
+            {errors.country && <span className="error">{errors.country.message}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Ciudad:</label>
+            <input
+              type="text"
+              {...register('city', { required: 'La ciudad es obligatoria' })}
+            />
+            {errors.city && <span className="error">{errors.city.message}</span>}
           </div>
 
           <div className="form-group">
@@ -146,37 +194,27 @@ const CreateClient: React.FC = () => {
             <div key={field.id} className="contact-group">
               <input placeholder="Nombre" {...register(`contacts.${index}.name`, { required: 'Nombre obligatorio' })} />
               <input placeholder="Apellido" {...register(`contacts.${index}.lastName`, { required: 'Apellido obligatorio' })} />
-              <input
-                placeholder="Correo"
-                type="email"
-                {...register(`contacts.${index}.email`, {
-                  required: 'Correo obligatorio',
-                  pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Correo inválido' },
-                })}
-              />
-              <input
-                placeholder="Teléfono"
-                {...register(`contacts.${index}.phone`, {
-                  required: 'Teléfono obligatorio',
-                  pattern: { value: /^\d+$/, message: 'Solo números' },
-                })}
-              />
+              <input placeholder="Correo" type="email" {...register(`contacts.${index}.email`, {
+                required: 'Correo obligatorio',
+                pattern: { value: /^[^\s@]+@[^\s@]+$/, message: 'Correo inválido' },
+              })} />
+              <input placeholder="Teléfono" {...register(`contacts.${index}.phone`, {
+                required: 'Teléfono obligatorio',
+                pattern: { value: /^\d+$/, message: 'Solo números' },
+              })} />
 
               <button type="button" onClick={() => remove(index)} className="delete-contact-btn">🗑️</button>
             </div>
           ))}
 
           <div className="button-container">
-            <button
-              type="button"
-              className="add-contact-btn"
-              onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}
-            >
+            <button type="button" className="add-contact-btn" onClick={() => append({ name: '', lastName: '', email: '', phone: '' })}>
               Agregar Contacto
             </button>
             <button type="submit">{isEditing ? 'Guardar Cambios' : 'Guardar Cliente'}</button>
           </div>
         </form>
+
       </div>
     </MainLayout>
   );
