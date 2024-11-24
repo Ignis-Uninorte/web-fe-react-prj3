@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FollowUp } from '../../types/followup.type';
-import { useAllFollowUps, useDeleteFollowUp } from '../../hooks/useFollowup';
+import { useFollowUpsByOpportunityId, useDeleteFollowUp } from '../../hooks/useFollowup';
 import DataTable from 'react-data-table-component';
 import columnsConfig from './columnConfig';
 import ActionButtons from './actionButtons';
 import DeleteConfirmationModal from '../moduleOpportunity/components/DeleteConfirmationModal';
 
 interface FollowUpTableProps {
-    idOpportunity?: number;
+    idOpportunity: number;
 }
 
 const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
-    const { isLoading, isSuccess, isError, data: followUpData } = useAllFollowUps();
+    const { isLoading, isSuccess, isError, data: followUpData } = useFollowUpsByOpportunityId(idOpportunity);
     const deleteFollowUp = useDeleteFollowUp();
     const navigate = useNavigate();
 
@@ -22,13 +22,9 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
 
     useEffect(() => {
         if (isSuccess && followUpData) {
-            let data = followUpData;
-            if (idOpportunity != null) {
-                data = followUpData.filter((followUp: FollowUp) => followUp.opportunityId === idOpportunity);
-            }
-            setFollowUps(data);
+            setFollowUps(followUpData);
         }
-    }, [isSuccess, followUpData, idOpportunity]);
+    } , [isSuccess, followUpData]);
 
     const handleDeleteClick = (followUp: FollowUp) => {
         setSelectedFollowUp(followUp); 
@@ -70,29 +66,6 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
 
     const baseColumns = [
         {
-            name: 'ID',
-            selector: (row: FollowUp) => row.id,
-            sortable: true,
-        },
-        {
-            name: 'ID Oportunidad Asociada',
-            selector: (row: FollowUp) => row.opportunityId,
-            sortable: true,
-            cell: (row: FollowUp) => (
-                <span
-                    onClick={() => navigate(`/activities/${row.id}`)}
-                    style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                    {row.opportunityId}
-                </span>
-            ),
-        },
-        {
-            name: 'Tipo de contacto',
-            selector: (row: FollowUp) => row.contactType,
-            sortable: true,
-        },
-        {
             name: 'Ejecutivo Comercial',
             selector: (row: FollowUp) => row.commercialExecutive,
             sortable: true,
@@ -102,6 +75,11 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
             selector: (row: FollowUp) => row.description,
             sortable: true,
         },
+        {
+            name: 'Tipo de contacto',
+            selector: (row: FollowUp) => row.contactType,
+            sortable: true,
+        }
     ];
 
     const customColumns = [
