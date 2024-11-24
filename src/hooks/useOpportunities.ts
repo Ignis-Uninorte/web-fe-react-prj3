@@ -74,3 +74,15 @@ export function useUpdateOpportunity() {
         },
     });
 }
+
+export function useOpportunitiesByClientId(clientId: number | undefined) {
+    return useQuery({
+        queryKey: ['opportunities', clientId],
+        queryFn: async () => {
+            if (!clientId) return []; // Safeguard against undefined clientId
+            const opportunities = await getAllOpportunities(); // Or use a filtered API if available
+            return opportunities.filter((opp: { clientId: string }) => Number(opp.clientId) === clientId);
+        },
+        enabled: clientId !== undefined, // Ensures query only runs when clientId is defined
+    });
+}

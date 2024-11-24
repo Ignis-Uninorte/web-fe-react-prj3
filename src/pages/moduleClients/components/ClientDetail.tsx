@@ -2,22 +2,22 @@ import React, { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import { useAllClients } from '../../../hooks/useClients';
-import { useAllOpportunities } from '../../../hooks/useOpportunities';
+import { useOpportunitiesByClientId } from '../../../hooks/useOpportunities';
 import { Client, Contact } from '../../../types/clientes.type';
-import { Opportunity } from '../../../types/opportunities.type';
 import FollowUpTable from '../../components/followupTable';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/ClientDetail.css';
+import { Opportunity } from '../../../types/opportunities.type';
 
 const ClientDetail: React.FC = () => {
     const { clientId } = useParams<{ clientId: string }>();
     const navigate = useNavigate();
     const decodedClientId = clientId ? decodeURIComponent(clientId) : '';
-    const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useAllClients();
-    const { data: opportunitiesData, isLoading: opportunitiesLoading, error: opportunitiesError } = useAllOpportunities();
 
+    const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useAllClients();
     const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
 
+    // Get the current client
     const clientData = useMemo(() => {
         if (!clientsData || !decodedClientId) return undefined;
         return clientsData.find((client: Client) =>
@@ -25,23 +25,21 @@ const ClientDetail: React.FC = () => {
         );
     }, [clientsData, decodedClientId]);
 
-    // Filter opportunities for the current client
-    const clientOpportunities = useMemo(() => {
-        if (!opportunitiesData || !clientData) return [];
-        return opportunitiesData.filter((opp: Opportunity) => opp.clientId === clientData.id.toString());
-    }, [opportunitiesData, clientData]);
+    // Fetch opportunities for the current client
+    const { data: clientOpportunities, isLoading: oppLoading, error: oppError } = useOpportunitiesByClientId(clientData?.id);
 
     const handleNameClick = (opportunityId: number) => {
-        navigate(`/opportunity/${opportunityId}`); // Use ID for redirection
+        navigate(`/opportunity/${opportunityId}`); // Navigate to opportunity details
     };
 
     const handleSeguimientoClick = (opportunityId: number) => {
         setSelectedOpportunityId(opportunityId);
     };
 
-    if (clientsLoading || opportunitiesLoading) return <p>Loading...</p>;
+    // Handle loading and error states
+    if (clientsLoading || oppLoading) return <p>Loading...</p>;
     if (clientsError) return <p className="error-message">Error: {clientsError.message}</p>;
-    if (opportunitiesError) return <p className="error-message">Error: {opportunitiesError.message}</p>;
+    if (oppError) return <p className="error-message">Error: {oppError.message}</p>;
     if (!clientData) return <p>No client data available for "{decodedClientId}".</p>;
 
     return (
@@ -95,7 +93,7 @@ const ClientDetail: React.FC = () => {
 
                 {/* Display Opportunities */}
                 <h3 className="associated-opportunities-title">Oportunidades de negocio</h3>
-                {clientOpportunities.length > 0 ? (
+                {clientOpportunities && clientOpportunities.length > 0 ? (
                     <table className="opportunities-table">
                         <thead>
                             <tr>
