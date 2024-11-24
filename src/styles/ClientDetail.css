@@ -157,7 +157,6 @@ button.back-btn {
 .seguimiento-btn {
     background-color: #fd8916;
     color: #fff;
-    padding: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -167,4 +166,43 @@ button.back-btn {
 .seguimiento-btn:hover {
     background-color: #e07813;
 }
+
+/* Follow-Up Table Section */
+.followup-table-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.followup-table-container h3 {
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Follow-Up Table Styling */
+.followup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.followup-table th,
+.followup-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.followup-table th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+}
+
+.followup-table td {
+    background-color: #ffffff;
+}
+
 
