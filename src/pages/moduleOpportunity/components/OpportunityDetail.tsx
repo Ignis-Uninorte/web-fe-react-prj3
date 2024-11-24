@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
 import { useAllOpportunities } from '../../../hooks/useOpportunities';
 import { useAllClients } from '../../../hooks/useClients';
@@ -8,8 +8,10 @@ import { Client } from '../../../types/clientes.type';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/OpportunityDetail.css';
 import FollowUpTable from '../../components/followupTable';
+import '../../../styles/main-moduleActivity.css';
 
 const OpportunityDetail: React.FC = () => {
+    const navigate = useNavigate();
     const { opportunityId } = useParams<{ opportunityId: string }>();
     const { data: opportunitiesData, isLoading: oppLoading, error: oppError } = useAllOpportunities();
     const { data: clientsData, isLoading: clientLoading, error: clientError } = useAllClients();
@@ -33,6 +35,13 @@ const OpportunityDetail: React.FC = () => {
 
     return (
         <MainLayout>
+            <div className="body_moduleActivity">
+                <h1>Seguimiento</h1>
+                <button
+                    onClick={() => navigate(`/crear-seguimiento/${opportunityId}`)}
+                    className="btn_crearactividad">
+                    <b>Crear Seguimiento</b>
+                </button>   </div>
             <div className="opportunity-detail-container">
                 <div className="back-arrow">
                     <button onClick={() => window.history.back()} className="back-btn">
