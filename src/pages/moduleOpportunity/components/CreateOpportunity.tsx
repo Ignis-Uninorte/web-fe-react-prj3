@@ -26,41 +26,40 @@ const OpportunityForm: React.FC = () => {
 
     const { data: clients, isLoading: clientsLoading } = useClients();
     const { data: opportunity, isLoading: opportunityLoading } = useOpportunity(opportunityId);
-    const { data: opportunities } = useAllOpportunities(); 
+    const { data: opportunities } = useAllOpportunities();
 
     const createOpportunity = useCreateOpportunity();
     const updateOpportunity = useUpdateOpportunity();
 
     const isEditMode = !!opportunityId;
 
-    // Preload form data if editing
     useEffect(() => {
         if (opportunity) {
             reset({
                 ...opportunity,
-                estimatedValue: opportunity.estimatedValue.toString(), 
+                estimatedValue: opportunity.estimatedValue.toString(),
             });
         }
     }, [opportunity, reset]);
 
-    
+
     const getNextOpportunityId = (): string => {
         if (!opportunities?.length) {
-            return '1'; 
+            return '1';
         }
-    
+
         const lastId = opportunities
-            .map((opp: Opportunity) => parseInt(opp.Id, 10)) 
-            .filter((id: number) => !isNaN(id)) 
-            .sort((a: number, b: number) => b - a)[0]; 
-    
-        return (lastId + 1).toString(); 
+            .map((opp: Opportunity) => parseInt(opp.Id, 10))
+            .filter((id: number) => !isNaN(id))
+            .sort((a: number, b: number) => b - a)[0];
+
+        return (lastId + 1).toString();
     };
 
     const onSubmit: SubmitHandler<OpportunityFormInputs> = (data) => {
         const formattedData = {
             ...data,
-            Id: data.Id || getNextOpportunityId(), 
+            Id: data.Id || getNextOpportunityId(),
         };
 
         if (isEditMode && opportunityId) {
@@ -160,15 +159,25 @@ const OpportunityForm: React.FC = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Estado:</label>
-                        <select {...register('status', { required: 'El estado es obligatorio' })}>
-                            <option value="">Seleccione el estado</option>
-                            <option value="Apertura">Apertura</option>
-                            <option value="En Estudio">En Estudio</option>
-                            <option value="Orden de Compra">Orden de Compra</option>
-                            <option value="Finalizada">Finalizada</option>
-                        </select>
-                        {errors.status && <span className="error">{errors.status.message}</span>}
+                        {isEditMode ? (
+                            <>
+                                <label>Estado:</label>
+                                <select {...register('status', { required: 'El estado es obligatorio' })}>
+                                    <option value="">Seleccione el estado</option>
+                                    <option value="Apertura">Apertura</option>
+                                    <option value="En Estudio">En Estudio</option>
+                                    <option value="Orden de Compra">Orden de Compra</option>
+                                    <option value="Finalizada">Finalizada</option>
+                                </select>
+                                {errors.status && <span className="error">{errors.status.message}</span>}
+                            </>
+                        ) : (
+                            <input
+                                type="hidden"
+                                value="Apertura"
+                                {...register('status', { required: 'El estado es obligatorio' })}
+                            />
+                        )}
                     </div>
 
                     <button type="submit" className="submit-btn">
