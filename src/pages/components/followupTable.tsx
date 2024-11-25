@@ -6,6 +6,8 @@ import DataTable from 'react-data-table-component';
 import columnsConfig from './columnConfig';
 import ActionButtons from './actionButtons';
 import DeleteConfirmationModal from '../moduleOpportunity/components/DeleteConfirmationModal';
+import ModalUpdate from '../moduleActivity/components/modal';
+import CreateActivity from '../moduleActivity/components/CreateActivity';
 
 interface FollowUpTableProps {
     idOpportunity: number;
@@ -19,12 +21,14 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
     const [followUps, setFollowUps] = useState<FollowUp[]>([]);
     const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+    const [selectedActivity, setSelectedActivity] = useState<FollowUp | null>(null);
 
     useEffect(() => {
         if (isSuccess && followUpData) {
             setFollowUps(followUpData);
         }
-    } , [isSuccess, followUpData]);
+    }, [isSuccess, followUpData]);
 
     const handleDeleteClick = (followUp: FollowUp) => {
         setSelectedFollowUp(followUp); 
@@ -35,7 +39,6 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
         if (selectedFollowUp) {
             deleteFollowUp.mutate(selectedFollowUp.id, {
                 onSuccess: () => {
-                    
                     setFollowUps((prevFollowUps) =>
                         prevFollowUps.filter((f) => f.id !== selectedFollowUp.id)
                     );
@@ -51,10 +54,16 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
         setIsModalOpen(false); 
     };
 
+    // Actualizar
+    const handleUpdateClick = (followUp: FollowUp) => {
+        setSelectedActivity(followUp);
+        setIsUpdateOpen(true); 
+    };
+
     const actionButtons = [
         {
             label: 'Actualizar',
-            onClick: (followUp: FollowUp) => navigate(`/actualizar-seguimiento/${followUp.id}`),
+            onClick: handleUpdateClick,
             className: 'action-btn update-opp-btn',
         },
         {
@@ -79,7 +88,7 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
             name: 'Tipo de contacto',
             selector: (row: FollowUp) => row.contactType,
             sortable: true,
-        }
+        },
     ];
 
     const customColumns = [
@@ -129,6 +138,15 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />
+
+            {/* Update Modal for FollowUp */}
+            <ModalUpdate isOpen={isUpdateOpen} onClose={() => setIsUpdateOpen(false)}>
+            <CreateActivity
+                isOpen={isUpdateOpen}
+                activityToEdit={selectedActivity}
+                onClose={() => setIsUpdateOpen(false)}
+            />
+            </ModalUpdate>
         </div>
     );
 };
