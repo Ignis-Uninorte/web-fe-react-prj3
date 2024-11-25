@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../../layouts/MainLayout';
-import { useClients, useOpportunity, useCreateOpportunity, useUpdateOpportunity } from '../../../hooks/useOpportunities';
+import { useClients, useOpportunity, useCreateOpportunity, useUpdateOpportunity, useAllOpportunities } from '../../../hooks/useOpportunities';
 import back from '../../../assets/back-arrow.svg';
 import '../../../styles/CreateOpportunity.css';
+import { Opportunity } from '../../../types/opportunities.type';
 
 interface OpportunityFormInputs {
     Id?: string;
@@ -25,6 +26,7 @@ const OpportunityForm: React.FC = () => {
 
     const { data: clients, isLoading: clientsLoading } = useClients();
     const { data: opportunity, isLoading: opportunityLoading } = useOpportunity(opportunityId);
+    const { data: opportunities } = useAllOpportunities(); 
 
     const createOpportunity = useCreateOpportunity();
     const updateOpportunity = useUpdateOpportunity();
@@ -36,15 +38,29 @@ const OpportunityForm: React.FC = () => {
         if (opportunity) {
             reset({
                 ...opportunity,
-                estimatedValue: opportunity.estimatedValue.toString(), // convertir a string siempre
+                estimatedValue: opportunity.estimatedValue.toString(), 
             });
         }
     }, [opportunity, reset]);
 
+    
+    const getNextOpportunityId = (): string => {
+        if (!opportunities?.length) {
+            return '1'; 
+        }
+    
+        const lastId = opportunities
+            .map((opp: Opportunity) => parseInt(opp.Id, 10)) 
+            .filter((id: number) => !isNaN(id)) 
+            .sort((a: number, b: number) => b - a)[0]; 
+    
+        return (lastId + 1).toString(); 
+    };
+
     const onSubmit: SubmitHandler<OpportunityFormInputs> = (data) => {
         const formattedData = {
             ...data,
-            Id: data.Id ?? opportunityId ?? '', //  Id nunca sea undefined, siempre será una cadena
+            Id: data.Id || getNextOpportunityId(), 
         };
 
         if (isEditMode && opportunityId) {
@@ -65,7 +81,7 @@ const OpportunityForm: React.FC = () => {
                 { ...formattedData, status: 'Apertura' },
                 {
                     onSuccess: () => {
-                        setMessage('¡Oportunidad creada con éxito! Redirigiendo en 2seg');
+                        setMessage('¡Oportunidad creada con éxito! Redirigiendo en 2 segundos');
                         reset();
                         setTimeout(() => navigate('/oportunidades'), 2000);
                     },
@@ -95,7 +111,7 @@ const OpportunityForm: React.FC = () => {
                         <label>Cliente:</label>
                         <select
                             {...register('clientId', { required: 'El cliente es obligatorio' })}
-                            disabled={isEditMode} // Deshabilitar si estamos editando
+                            disabled={isEditMode} // Disable if editing
                         >
                             <option value="">Seleccione un cliente</option>
                             {clients?.map((client: { id: number; name: string }) => (
