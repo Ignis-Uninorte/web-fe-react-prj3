@@ -36,7 +36,7 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose, activityToEdit
             setValue('opportunityId', parseInt(opportunityId, 10));
         }
         if (activityToEdit) {
-            setValue('id', activityToEdit.id || 0);
+            setValue('id', activityToEdit.id ?? 0);
             setValue('contactType', activityToEdit.contactType);
             setValue('contactDate', activityToEdit.contactDate);
             setValue('clientContact', activityToEdit.clientContact);
@@ -47,8 +47,8 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose, activityToEdit
 
     const onSubmit: SubmitHandler<ActivityFormInputs> = async (data) => {
         try {
-            if (activityToEdit && activityToEdit.id) {
-                await updateActivity(data);
+            if (activityToEdit && activityToEdit.id !== undefined) {
+                await updateActivity({ ...data, id: activityToEdit.id });
             } else {
                 await submitActivity(data);
             }
@@ -72,7 +72,7 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose, activityToEdit
             {isError && <div>Error al cargar los contactos.</div>}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input type="hidden" {...register('opportunityId', { required: true })} />
-                {activityToEdit && <input type="hidden" {...register('id')} />}
+                {activityToEdit && activityToEdit.id !== undefined && <input type="hidden" value={activityToEdit.id} {...register('id', { valueAsNumber: true })} />}
 
                 <div className="form-group">
                     <label>Tipo de Contacto:</label>
