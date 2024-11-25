@@ -83,7 +83,6 @@ const OpportunityDetail: React.FC = () => {
                 </Modal>
 
                 <div>
-                    <strong>Tabla Seguimiento</strong>
                     <FollowUpTable idOpportunity={Number(opportunityId)} />
                 </div>
             </div>

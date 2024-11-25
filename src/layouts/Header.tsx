@@ -43,7 +43,6 @@ const Header: React.FC = () => {
                                 <li onClick={() => navigate('/dashboard')}>Dashboard</li>
                                 <li onClick={() => navigate('/')}>Clientes</li>
                                 <li onClick={() => navigate('/oportunidades')}>Oportunidades</li>
-                                <li onClick={() => navigate('/seguimiento')}>Seguimiento</li>
                             </ul>
                         </div>
                     )}
