@@ -142,7 +142,7 @@ const FollowUpTable: React.FC<FollowUpTableProps> = ({ idOpportunity }) => {
             {/* Update Modal for FollowUp */}
             <ModalUpdate isOpen={isUpdateOpen} onClose={() => setIsUpdateOpen(false)}>
             <CreateActivity
-                isOpen={isUpdateOpen}
+                
                 activityToEdit={selectedActivity}
                 onClose={() => setIsUpdateOpen(false)}
             />
