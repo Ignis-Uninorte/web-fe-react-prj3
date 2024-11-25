@@ -41,10 +41,12 @@
 }
 
 .update-opp-btn {
-    background-color: #007bff;
+    background-color: #004aad;
+    border-radius: 8px;   
 }
 
 .delete-btn {
+    border-radius: 8px;
     background-color: #dc3545;
 }
 
@@ -69,4 +71,5 @@ button{
     border: none;
     cursor: pointer;
     opacity: 0.9;
+    border-radius: 3px;
 }

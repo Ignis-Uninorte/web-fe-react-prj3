@@ -3,7 +3,7 @@
     margin: 0;
     height: fit-content;
     width: 100%;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
     color: black;
     text-align: center;
 }
@@ -13,10 +13,14 @@
 }
 
 .btn_crearactividad{    
+    display: flex;
+    justify-content: flex-start;
     background-color: #ff8d08;
     color: white;
-    padding: 16px 12px;
+    font-size: 16px;
+    padding: 14px 20px;
     margin: 8px 0;
+    margin-left: 60px;
     border: none;
     cursor: pointer;
 }
