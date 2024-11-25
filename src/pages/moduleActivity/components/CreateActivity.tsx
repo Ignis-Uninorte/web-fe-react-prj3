@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { useSubmitActivity } from '../../../hooks/useSubmitActivity';
-import { useFetchContactsFromClients } from '../../../hooks/useFetchContactsFromClients'; // Importamos el hook
+import { useUpdateActivity } from '../../../hooks/useUpdateActivity';
+import { useFetchContactsFromClients } from '../../../hooks/useFetchContactsFromClients';
 import '../../../styles/CreateActivity.css';
 
 export interface ActivityFormInputs {
+    id?: number;
     opportunityId: number;
     contactType: string;
     contactDate: string;
@@ -16,9 +18,10 @@ export interface ActivityFormInputs {
 
 interface CreateActivityProps {
     onClose: () => void;
+    activityToEdit?: ActivityFormInputs | null;
 }
 
-const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
+const CreateActivity: React.FC<CreateActivityProps> = ({ onClose, activityToEdit }) => {
     const { opportunityId } = useParams<{ opportunityId: string }>();
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<ActivityFormInputs>();
 
@@ -26,18 +29,31 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
     const { data: clientContacts, isLoading, isError } = useFetchContactsFromClients(opportunityId);
 
     const { mutateAsync: submitActivity, isError: isSubmitError, isSuccess: isSubmitSuccess } = useSubmitActivity();
+    const { mutateAsync: updateActivity, isError: isUpdateError, isSuccess: isUpdateSuccess } = useUpdateActivity();
 
     useEffect(() => {
         if (opportunityId) {
             setValue('opportunityId', parseInt(opportunityId, 10));
         }
-    }, [opportunityId, setValue]);
+        if (activityToEdit) {
+            setValue('id', activityToEdit.id || 0);
+            setValue('contactType', activityToEdit.contactType);
+            setValue('contactDate', activityToEdit.contactDate);
+            setValue('clientContact', activityToEdit.clientContact);
+            setValue('commercialExecutive', activityToEdit.commercialExecutive);
+            setValue('description', activityToEdit.description);
+        }
+    }, [opportunityId, activityToEdit, setValue]);
 
     const onSubmit: SubmitHandler<ActivityFormInputs> = async (data) => {
         try {
-            await submitActivity(data);
+            if (activityToEdit && activityToEdit.id) {
+                await updateActivity(data);
+            } else {
+                await submitActivity(data);
+            }
             reset();
-            onClose(); // Cierra el modal tras el éxito
+            onClose();
         } catch (error) {
             console.error('Error saving activity:', error);
         }
@@ -45,17 +61,18 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
 
     return (
         <div className="create-activity-modal">
-            <h2>Crear Actividad de Seguimiento</h2>
-            {isSubmitError && (
+            <h2>{activityToEdit ? 'Actualizar Actividad de Seguimiento' : 'Crear Actividad de Seguimiento'}</h2>
+            {(isSubmitError || isUpdateError) && (
                 <div className="error-message">Error guardando la actividad. Intenta de nuevo.</div>
             )}
-            {isSubmitSuccess && (
-                <div className="success-message">¡Actividad guardada con éxito!</div>
+            {(isSubmitSuccess || isUpdateSuccess) && (
+                <div className="success-message">¡Actividad {activityToEdit ? 'actualizada' : 'guardada'} con éxito!</div>
             )}
             {isLoading && <div>Cargando contactos...</div>}
             {isError && <div>Error al cargar los contactos.</div>}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input type="hidden" {...register('opportunityId', { required: true })} />
+                {activityToEdit && <input type="hidden" {...register('id')} />}
 
                 <div className="form-group">
                     <label>Tipo de Contacto:</label>
@@ -109,7 +126,7 @@ const CreateActivity: React.FC<CreateActivityProps> = ({ onClose }) => {
                     <button onClick={onClose} type="button" className="cancel-btn">
                         Cancelar
                     </button>
-                    <button type="submit" className="submit-btn">Guardar</button>
+                    <button type="submit" className="submit-btn">{activityToEdit ? 'Actualizar' : 'Guardar'}</button>
                 </div>
             </form>
         </div>
