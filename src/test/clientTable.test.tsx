@@ -56,12 +56,12 @@ describe('ClientTable Component', () => {
     );
 
     const toggleButtons = screen.getAllByText('Inactivar');
-    fireEvent.click(toggleButtons[0]); // Simulate clicking the toggle button for the first client
+    fireEvent.click(toggleButtons[0]);
 
     const { mutate } = useToggleClientStatus();
     expect(mutate).toHaveBeenCalledWith(
       { clientId: 123, currentStatus: true },
-      expect.any(Object) // Mutation options
+      expect.any(Object) 
     );
   });
 
@@ -73,7 +73,7 @@ describe('ClientTable Component', () => {
     );
 
     const updateButtons = screen.getAllByText('Actualizar');
-    fireEvent.click(updateButtons[0]); // Simulate clicking the update button for the first client
+    fireEvent.click(updateButtons[0]); 
 
     expect(mockNavigate).toHaveBeenCalledWith('/crear-cliente/123');
   });
@@ -86,7 +86,7 @@ describe('ClientTable Component', () => {
     );
 
     const clientName = screen.getByText('Client A');
-    fireEvent.click(clientName); // Simulate clicking on the client name
+    fireEvent.click(clientName); 
 
     expect(mockNavigate).toHaveBeenCalledWith('/client/Client%20A');
   });

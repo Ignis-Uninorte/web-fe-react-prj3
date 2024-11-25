@@ -14,7 +14,7 @@ import {
   getNextClientId,
 } from '../services/clients.services';
 
-// Mock all client services
+
 jest.mock('../services/clients.services', () => ({
   getAllClients: jest.fn(),
   toggleClientStatus: jest.fn(),
