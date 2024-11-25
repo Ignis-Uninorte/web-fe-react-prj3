@@ -9,6 +9,7 @@ import CreateOpportunity from './pages/moduleOpportunity/components/CreateOpport
 import OpportunityDetail from './pages/moduleOpportunity/components/OpportunityDetail';
 import Dashboard from './pages/Dashboard';
 
+
 const queryClient = new QueryClient();
 
 function App() {
